@@ -32,3 +32,17 @@ TEST_CASE("lb")
     REQUIRE(lb(4, 1) == 0x0000007F);
   }
 }
+
+TEST_CASE("lbu")
+{
+  SECTION("Ler um byte com sinal negativo")
+  {
+    mem[1] = 0x0000F100; // Big Endian
+    REQUIRE(lbu(4, 1) == 0x000000F1);
+  }
+  SECTION("Ler um byte com sinal positivo")
+  {
+    mem[1] = 0x00007F00;
+    REQUIRE(lbu(4, 1) == 0x0000007F);
+  }
+}

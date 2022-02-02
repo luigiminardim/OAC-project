@@ -56,3 +56,21 @@ int32_t lb(uint32_t address, int32_t kte)
   int8_t *byteMemory = (int8_t *)mem;
   return byteMemory[address + kte];
 }
+
+/**
+ * Lê um byte do vetor memória e retorna-o como um número positivo, ou seja, todos os bits
+ * superiores devem ser zerados.
+ * 
+ * @param address
+ * Endereço especificado.
+ * 
+ * @param kte
+ * Deslocamento para frente ou para trás com relação ao endereço
+ * 
+ * @return int32_t
+ */
+int32_t lbu(uint32_t address, int32_t kte)
+{
+  uint8_t *byteMemory = (uint8_t *)mem;
+  return byteMemory[address + kte];
+}
