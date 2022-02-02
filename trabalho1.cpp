@@ -1,3 +1,12 @@
+/**
+ * @file trabalho1.cpp
+ * @author Luigi Minardi Ferreira Maia (luigi.minardi@aluno.unb.br)
+ * @brief
+ * Este trabalho consiste na simulação de instruções de acesso à memória do RISCV RV32I em linguagem
+ * C.
+ * @date 2022-02-02
+ */
+
 #pragma once
 
 #include <stdint.h>
