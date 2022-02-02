@@ -42,7 +42,7 @@ make tests
 
 Este comando irá produzir o arquivo executável dos testes (`test.exe`) e executá-lo
 
-# Respostas às perguntas do projeto 1.
+# Respostas às perguntas do projeto 1
 
 > Resposta à pergunta: qual a diferença entre endereços de bytes, half word e word?
 
@@ -58,9 +58,9 @@ recursos de formatação na saída de strings.
 > Qual sistema operacional utilizado?
 
 O sistema operacional utilizado para desenvolvimento foi o
-(Ubuntu 20.04.3 LTS)[https://ubuntu.com/download/desktop]
+[Ubuntu 20.04.3 LTS](https://ubuntu.com/download/desktop).
 
 > Qual IDE utilizada (Eclipse, XCode, etc)?
 
 Para o desenvolvimento desse projeto não foi utilizada nenhuma IDE. Mas foi utilizado o editor de
-textos (Visual Studio Code)[https://code.visualstudio.com/].
+textos [Visual Studio Code](https://code.visualstudio.com/).
