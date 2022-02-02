@@ -57,3 +57,13 @@ TEST_CASE("sw")
     REQUIRE(mem[2] == anyInteger);
   }
 }
+
+TEST_CASE("sb")
+{
+  SECTION("Armazenar o dado na memória")
+  {
+    mem[1] = 0x00000000;
+    sb(4, 1, 0xAB);
+    REQUIRE(mem[1] == 0x0000AB00);
+  }
+}

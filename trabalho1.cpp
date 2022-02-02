@@ -102,3 +102,24 @@ void sw(uint32_t address, int32_t kte, int32_t dado)
     return;
   }
 }
+
+/**
+ * Escreve um byte na memória. Caso utilize operações de mascaramento, a palavra que contém o byte
+ * deve ser lida da memória, o byte deve ser posicionado corretamente através de deslocamentos e a
+ * escrita ocorre utilizando máscaras. Alternativamente podese utilizar a coerção para (int8_t *) e
+ * escrever diretamente no vetor memória.
+ * 
+ * @param address
+ * Endereço especificado.
+ *  
+ * @param kte
+ * Deslocamento para frente ou para trás com relação ao endereço.
+ * 
+ * @param dado 
+ * Inteiro a ser armazenado.
+ */
+void sb(uint32_t address, int32_t kte, int8_t dado)
+{
+  int8_t *byteMemory = (int8_t *)mem;
+  byteMemory[address + kte] = dado;
+}
