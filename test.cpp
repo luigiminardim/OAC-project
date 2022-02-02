@@ -46,3 +46,14 @@ TEST_CASE("lbu")
     REQUIRE(lbu(4, 1) == 0x0000007F);
   }
 }
+
+TEST_CASE("sw")
+{
+  SECTION("Se o endereço estiver correto, a função deve armazenar o valor na memória")
+  {
+    mem[2] = 0;
+    int32_t anyInteger = 0xBBCCDDFF;
+    sw(4, 1, anyInteger);
+    REQUIRE(mem[2] == anyInteger);
+  }
+}

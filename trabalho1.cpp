@@ -65,7 +65,7 @@ int32_t lb(uint32_t address, int32_t kte)
  * Endereço especificado.
  * 
  * @param kte
- * Deslocamento para frente ou para trás com relação ao endereço
+ * Deslocamento para frente ou para trás com relação ao endereço.
  * 
  * @return int32_t
  */
@@ -73,4 +73,32 @@ int32_t lbu(uint32_t address, int32_t kte)
 {
   uint8_t *byteMemory = (uint8_t *)mem;
   return byteMemory[address + kte];
+}
+
+/** Escreve um inteiro alinhado na memória - endereços múltiplos de 4. O cálculo do endereço é
+ * realizado da mesma forma que na operação lw().
+ * 
+ * @param address
+ * Endereço especificado.
+ * 
+ * @param kte
+ * Deslocamento para frente ou para trás com relação ao endereço.
+ * 
+ * @param dado
+ * Inteiro alinhado na memória.
+ */
+void sw(uint32_t address, int32_t kte, int32_t dado)
+{
+  if (address % 4 != 0)
+  {
+    std::cerr << "Error: address % 4 != 0" << std::endl;
+    return;
+  }
+  else
+  {
+    uint32_t address_index = address / 4;
+    uint32_t index = address_index + kte;
+    mem[index] = dado;
+    return;
+  }
 }
