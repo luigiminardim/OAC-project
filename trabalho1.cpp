@@ -16,7 +16,7 @@
  * Endereço especiCicado.
  * 
  * @param kte
- * Deslocamento para frente ou para trás com relação ao endereço
+ * Deslocamento para frente ou para trás com relação ao endereço.
  * 
  * @return int32_t 
  */
@@ -33,4 +33,26 @@ int32_t lw(uint32_t address, int32_t kte)
     uint32_t index = address_index + kte;
     return mem[index];
   }
+}
+
+/** 
+ * Lê um byte do vetor memória e retorna-o, estendendo o sinal para 32 bits. Lembrando que as
+ * palavras da memória tem 4 bytes cada, para acessar um byte dentro da palavra pode-se: 
+ *   - Ler a palavra que contém o byte e, por operações de mascaramento, extrair byte endereçado, ou 
+ *   - Criar um ponteiro para byte e fazer um type cast (coerção de tipo) do endereço do vetor
+       memória (int32_t *) para byte (int8_t *). Usando o ponteiro para byte pode-se acessar
+       diretamente o dado desejado.
+ * 
+ * @param address
+ * Endereço especificado.
+ * 
+ * @param kte 
+ * Deslocamento para frente ou para trás com relação ao endereço.
+ * 
+ * @return int32_t 
+ */
+int32_t lb(uint32_t address, int32_t kte)
+{
+  int8_t *byteMemory = (int8_t *)mem;
+  return byteMemory[address + kte];
 }
