@@ -4,13 +4,20 @@ on:
   push:
     branches: [ main ]
   pull_request:
-    branches: [ main ]
 
 jobs:
-  build:
+  test:
     runs-on: ubuntu-latest
-
     steps:
-    - uses: actions/checkout@v2
+    - name: Clone code
+      uses: actions/checkout@v2
     - name: Test
-      run: make tests
+      run: make test
+
+  check-build:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Clone code
+      uses: actions/checkout@v2
+    - name: Test
+      run: make build
