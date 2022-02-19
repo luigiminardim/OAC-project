@@ -16,31 +16,13 @@ O respositório desse projeto pode ser encontrado em https://github.com/luigimin
   geração de executáveis e outros ficheiros não-fonte de um programa a partir dos ficheiros-fonte do
   programa.
 
-### Execução do programa
+### Comandos
 
-Para executar o programa é primeiro necessário produzir o arquivo executável. Para isso basta abrir
-o terminal na pasta raiz e executar:
-
-```sh
-make
-```
-
-com isto, será produzido o arquivo executável `oac.exe` na pasta raiz. Agora basta apenas executar o
-arquivo no terminal.
-
-```sh
-./oac.exe
-```
-
-### Execução dos testes
-
-Para realizar a execução dos testes, basta utilizar o comando:
-
-```sh
-make tests
-```
-
-Este comando irá produzir o arquivo executável dos testes (`test.exe`) e executá-lo
+- `make build`: Produz o executável em `build/oac.exe`;
+- `make run`: Se não houver o executável (`make build`), gera o executável e o inicia.
+- `make test`: Gera o executável de teste e o inicia.
+- `make clean`: Remove os arquivos objeto da pasta `build/objs`.
+- `make reset`: Remove os arquivos objeto da pasta `build/`.
 
 # Respostas às perguntas do projeto 1
 

@@ -1,7 +1,7 @@
 #include <iostream>
 #include <iomanip>
-#include "globals.cpp"
-#include "trabalho1.cpp"
+#include "globals.hpp"
+#include "trabalho1.hpp"
 
 int main()
 {

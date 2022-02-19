@@ -1,9 +1,8 @@
-#define CATCH_CONFIG_MAIN
+#include "catch.hpp"
 
 #include <stdint.h>
-#include "catch.hpp"
-#include "globals.cpp"
-#include "trabalho1.cpp"
+#include "globals.hpp"
+#include "trabalho1.hpp"
 
 TEST_CASE("lw")
 {
