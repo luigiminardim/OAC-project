@@ -32,7 +32,7 @@ reset: clean
 # Build Rules
 
 $(TARGET): $(OBJECTS)
-	$(CC) -o $@ $<
+	$(CC) -o $@ $^
 
 build/objs/%.test.o: test/%.test.cpp test/*.hpp src/*.hpp
 	$(CC) -I./src -I./test -c -o $@ $<
@@ -41,5 +41,4 @@ build/objs/%.o: src/%.cpp src/*.hpp
 	$(CC) -I./src -I./test -c -o $@ $<
 
 build/test.exe: $(TEST_OBJECTS)
-	echo $(TEST_OBJECTS)
 	$(CC) -o $@ $^
