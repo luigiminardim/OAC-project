@@ -88,6 +88,13 @@ TEST_CASE("decode")
   }
   SECTION("and")
   {
+    ri = 0x00737e33; // and t3, t1, t2
+    decode(instruction_context);
+    REQUIRE(instruction_context.ins_code == INSTRUCTIONS::I_and);
+    REQUIRE(instruction_context.ins_format == FORMATS::RType);
+    REQUIRE(instruction_context.rs1 == 6);
+    REQUIRE(instruction_context.rs2 == 7);
+    REQUIRE(instruction_context.rd == 28);
   }
   SECTION("andi")
   {

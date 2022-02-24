@@ -91,6 +91,10 @@ void decode(instruction_context_st &ic)
         ic.ins_code = INSTRUCTIONS::I_add;
       }
     }
+    else if (funct3 == FUNCT3::AND3)
+    {
+      ic.ins_code = INSTRUCTIONS::I_and;
+    }
   }
   else if (opcode == OPCODES::ILAType)
   {
