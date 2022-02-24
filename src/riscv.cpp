@@ -51,7 +51,28 @@ void fetch(instruction_context_st &ic)
   ic.pc = pc = pc + 4;
 }
 
-void decode(instruction_context_st &ic) { return; }
+uint32_t opcode, // codigo da operacao
+    rs1,         // indice registrador rs
+    rs2,         // indice registrador rt
+    rd,          // indice registrador rd
+    shamt,       // deslocamento
+    funct3,      // campos auxiliares
+    funct7;      // constante instrucao tipo J
+void decode(instruction_context_st &ic)
+{
+  rs1 = ic.rs1 = (REGISTERS)((ri >> 15) & 0x1f);
+  rs2 = ic.rs2 = (REGISTERS)((ri >> 20) & 0x1f);
+  rd = ic.rd = (REGISTERS)((ri >> 7) & 0x1f);
+  opcode = (ri >> 0) & 0x7f;
+  funct3 = (ri >> 12) & 0x7;
+  funct7 = (ri >> 25) & 0x7f;
+  if (opcode == 0x13 && funct3 == 0x0 && funct7 == 0x00)
+  {
+    ic.ins_code = INSTRUCTIONS::I_add;
+    ic.ins_format = FORMATS::RType;
+  }
+}
+
 void print_instr(instruction_context_st &ic) { return; }
 INSTRUCTIONS get_instr_code(uint32_t opcode, uint32_t func3, uint32_t func7) { return INSTRUCTIONS::I_add; }
 FORMATS get_i_format(uint32_t opcode, uint32_t func3, uint32_t func7) { return FORMATS::RType; }
