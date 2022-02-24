@@ -117,6 +117,13 @@ TEST_CASE("decode")
   }
   SECTION("beq")
   {
+    ri = 0x00628663; // beq t0, t1, 0x0000000c;
+    decode(instruction_context);
+    REQUIRE(instruction_context.ins_format == FORMATS::SBType);
+    REQUIRE(instruction_context.ins_code == INSTRUCTIONS::I_beq);
+    REQUIRE(instruction_context.rs1 == 5);
+    REQUIRE(instruction_context.rs2 == 6);
+    REQUIRE(instruction_context.imm13 == 0x0000000c);
   }
   SECTION("bne")
   {

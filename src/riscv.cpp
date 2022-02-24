@@ -68,7 +68,7 @@ void fetch(instruction_context_st &ic)
 int32_t extend32(int32_t number, uint qtd_number_bits)
 {
   bool is_negative = get_bit(number, qtd_number_bits - 1);
-  int32_t anti_mask = (is_negative ? 0xFFFFFFFFFFFFFFFF : 0x0000000000000000) << qtd_number_bits;
+  int32_t anti_mask = (is_negative ? 0xFFFFFFFF : 0x00000000) << qtd_number_bits;
   return number | anti_mask;
 }
 
@@ -79,6 +79,11 @@ void decode(instruction_context_st &ic)
   rd = ic.rd = (REGISTERS)(get_field(ri, 7, 0x1f));
   imm12_i = ic.imm12_i = extend32(get_field(ri, 20, 0xfff), 12);
   imm20_u = ic.imm20_u = extend32(get_field(ri, 12, 0xfffff), 20);
+  imm13 = ic.imm13 =
+      (get_bit(ri, 31)) << 12 |
+      (get_bit(ri, 7)) << 11 |
+      (get_field(ri, 25, 0x3f)) << 5 |
+      (get_field(ri, 8, 0xf)) << 1;
   opcode = (ri >> 0) & 0x7f;
   funct3 = (ri >> 12) & 0x7;
   funct7 = (ri >> 25) & 0x7f;
@@ -113,6 +118,14 @@ void decode(instruction_context_st &ic)
   {
     ic.ins_format = FORMATS::UType;
     ic.ins_code = INSTRUCTIONS::I_auipc;
+  }
+  else if (opcode == OPCODES::BType)
+  {
+    ic.ins_format = FORMATS::SBType;
+    if (funct3 == FUNCT3::BEQ3)
+    {
+      ic.ins_code = INSTRUCTIONS::I_beq;
+    }
   }
 }
 
