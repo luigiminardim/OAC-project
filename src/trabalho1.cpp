@@ -1,17 +1,4 @@
-/**
- * @file trabalho1.cpp
- * @author Luigi Minardi Ferreira Maia (luigi.minardi@aluno.unb.br)
- * @brief
- * Este trabalho consiste na simulação de instruções de acesso à memória do RISCV RV32I em linguagem
- * C.
- * @date 2022-02-02
- */
-
-#pragma once
-
-#include <stdint.h>
-#include <iostream>
-#include "globals.hpp"
+#include "trabalho1.hpp"
 
 /** Lê um inteiro alinhado - endereços múltiplos de 4.
  *
@@ -29,7 +16,20 @@
  *
  * @return int32_t
  */
-int32_t lw(uint32_t address, int32_t kte);
+int32_t lw(uint32_t address, int32_t kte)
+{
+  if (address % 4 != 0)
+  {
+    std::cerr << "Error: address % 4 != 0" << std::endl;
+    return 0;
+  }
+  else
+  {
+    uint32_t address_index = address / 4;
+    uint32_t index = address_index + kte;
+    return mem[index];
+  }
+}
 
 /**
  * Lê um byte do vetor memória e retorna-o, estendendo o sinal para 32 bits. Lembrando que as
@@ -47,7 +47,11 @@ int32_t lw(uint32_t address, int32_t kte);
  *
  * @return int32_t
  */
-int32_t lb(uint32_t address, int32_t kte);
+int32_t lb(uint32_t address, int32_t kte)
+{
+  int8_t *byteMemory = (int8_t *)mem;
+  return byteMemory[address + kte];
+}
 
 /**
  * Lê um byte do vetor memória e retorna-o como um número positivo, ou seja, todos os bits
@@ -61,7 +65,11 @@ int32_t lb(uint32_t address, int32_t kte);
  *
  * @return int32_t
  */
-int32_t lbu(uint32_t address, int32_t kte);
+int32_t lbu(uint32_t address, int32_t kte)
+{
+  uint8_t *byteMemory = (uint8_t *)mem;
+  return byteMemory[address + kte];
+}
 
 /** Escreve um inteiro alinhado na memória - endereços múltiplos de 4. O cálculo do endereço é
  * realizado da mesma forma que na operação lw().
@@ -75,7 +83,21 @@ int32_t lbu(uint32_t address, int32_t kte);
  * @param dado
  * Inteiro alinhado na memória.
  */
-void sw(uint32_t address, int32_t kte, int32_t dado);
+void sw(uint32_t address, int32_t kte, int32_t dado)
+{
+  if (address % 4 != 0)
+  {
+    std::cerr << "Error: address % 4 != 0" << std::endl;
+    return;
+  }
+  else
+  {
+    uint32_t address_index = address / 4;
+    uint32_t index = address_index + kte;
+    mem[index] = dado;
+    return;
+  }
+}
 
 /**
  * Escreve um byte na memória. Caso utilize operações de mascaramento, a palavra que contém o byte
@@ -92,4 +114,8 @@ void sw(uint32_t address, int32_t kte, int32_t dado);
  * @param dado
  * Inteiro a ser armazenado.
  */
-void sb(uint32_t address, int32_t kte, int8_t dado);
+void sb(uint32_t address, int32_t kte, int8_t dado)
+{
+  int8_t *byteMemory = (int8_t *)mem;
+  byteMemory[address + kte] = dado;
+}
