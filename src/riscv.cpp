@@ -79,11 +79,18 @@ void decode(instruction_context_st &ic)
   rd = ic.rd = (REGISTERS)(get_field(ri, 7, 0x1f));
   imm12_i = ic.imm12_i = extend32(get_field(ri, 20, 0xfff), 12);
   imm20_u = ic.imm20_u = extend32(get_field(ri, 12, 0xfffff), 20);
-  imm13 = ic.imm13 =
+  imm13 = ic.imm13 = extend32(
       (get_bit(ri, 31)) << 12 |
-      (get_bit(ri, 7)) << 11 |
-      (get_field(ri, 25, 0x3f)) << 5 |
-      (get_field(ri, 8, 0xf)) << 1;
+          (get_bit(ri, 7)) << 11 |
+          (get_field(ri, 25, 0x3f)) << 5 |
+          (get_field(ri, 8, 0xf)) << 1,
+      13);
+  imm21 = ic.imm21 = extend32(
+      (get_bit(ri, 31)) << 20 |
+          (get_field(ri, 12, 0xff)) << 12 |
+          (get_bit(ri, 20)) << 11 |
+          (get_field(ri, 21, 0x3FF)) << 1,
+      21);
   opcode = (ri >> 0) & 0x7f;
   funct3 = (ri >> 12) & 0x7;
   funct7 = (ri >> 25) & 0x7f;
@@ -150,6 +157,11 @@ void decode(instruction_context_st &ic)
     {
       ic.ins_code = INSTRUCTIONS::I_bltu;
     }
+  }
+  else if (opcode == OPCODES::JAL)
+  {
+    ic.ins_format = FORMATS::UJType;
+    ic.ins_code = INSTRUCTIONS::I_jal;
   }
 }
 

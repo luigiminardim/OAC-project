@@ -177,6 +177,12 @@ TEST_CASE("decode")
   }
   SECTION("jal")
   {
+    ri = 0x3a0000ef; // jal ra, 0x000003a0;
+    decode(instruction_context);
+    REQUIRE(instruction_context.ins_format == FORMATS::UJType);
+    REQUIRE(instruction_context.ins_code == INSTRUCTIONS::I_jal);
+    REQUIRE(instruction_context.rd == 1);
+    REQUIRE(instruction_context.imm21 == 0x000003a0);
   }
   SECTION("jalr")
   {
