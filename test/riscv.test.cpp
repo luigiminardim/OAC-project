@@ -186,57 +186,143 @@ TEST_CASE("decode")
   }
   SECTION("jalr")
   {
+    ri = 0x00040067; // jal zero, s0, 0;
+    decode(instruction_context);
+    REQUIRE(instruction_context.ins_format == FORMATS::IType);
+    REQUIRE(instruction_context.ins_code == INSTRUCTIONS::I_jalr);
+    REQUIRE(instruction_context.rs1 == 8);
+    REQUIRE(instruction_context.rd == 0);
+    REQUIRE(instruction_context.imm12_i == 0);
   }
   SECTION("lb")
   {
+    ri = 0x00028303; // addi t1, 0(t0)
+    decode(instruction_context);
+    REQUIRE(instruction_context.ins_format == FORMATS::IType);
+    REQUIRE(instruction_context.ins_code == INSTRUCTIONS::I_lb);
+    REQUIRE(instruction_context.rs1 == 5);
+    REQUIRE(instruction_context.imm12_i == 0x0);
+    REQUIRE(instruction_context.rd == 6);
   }
   SECTION("or")
   {
+    ri = 0x00736e33; // or t3, t1, t2
+    decode(instruction_context);
+    REQUIRE(instruction_context.ins_format == FORMATS::RType);
+    REQUIRE(instruction_context.ins_code == INSTRUCTIONS::I_or);
+    REQUIRE(instruction_context.rs1 == 6);
+    REQUIRE(instruction_context.rs2 == 7);
+    REQUIRE(instruction_context.rd == 28);
   }
   SECTION("lbu")
   {
+    ri = 0x0002c303; // lbu t1, 0(t0)
+    decode(instruction_context);
+    REQUIRE(instruction_context.ins_format == FORMATS::IType);
+    REQUIRE(instruction_context.ins_code == INSTRUCTIONS::I_lbu);
+    REQUIRE(instruction_context.rs1 == 5);
+    REQUIRE(instruction_context.imm12_i == 0x0);
+    REQUIRE(instruction_context.rd == 6);
   }
   SECTION("lw")
   {
+    ri = 0x0002a303; // lw t1, 0(t0)
+    decode(instruction_context);
+    REQUIRE(instruction_context.ins_format == FORMATS::IType);
+    REQUIRE(instruction_context.ins_code == INSTRUCTIONS::I_lw);
+    REQUIRE(instruction_context.rs1 == 5);
+    REQUIRE(instruction_context.imm12_i == 0x0);
+    REQUIRE(instruction_context.rd == 6);
   }
   SECTION("lui")
   {
-  }
-  SECTION("nop")
-  {
+    ri = 0x00009337; // lui t1, 9
+    decode(instruction_context);
+    REQUIRE(instruction_context.ins_format == FORMATS::UType);
+    REQUIRE(instruction_context.ins_code == INSTRUCTIONS::I_lui);
+    REQUIRE(instruction_context.imm20_u == 9);
+    REQUIRE(instruction_context.rd == 6);
   }
   SECTION("sltu")
   {
+    ri = 0x00003033; // sltu zero, zero, zero
+    decode(instruction_context);
+    REQUIRE(instruction_context.ins_format == FORMATS::RType);
+    REQUIRE(instruction_context.ins_code == INSTRUCTIONS::I_sltu);
   }
   SECTION("ori")
   {
+    ri = 0x0036313; // sltu zero, zero, zero
+    decode(instruction_context);
+    REQUIRE(instruction_context.ins_format == FORMATS::IType);
+    REQUIRE(instruction_context.ins_code == INSTRUCTIONS::I_ori);
   }
   SECTION("sb")
   {
+    ri = 0x007280a3; // sb t2, 1(t0)
+    decode(instruction_context);
+    REQUIRE(instruction_context.ins_format == FORMATS::SType);
+    REQUIRE(instruction_context.ins_code == INSTRUCTIONS::I_sb);
   }
   SECTION("slli")
   {
+    ri = 0x00c39393; // slli t2, t2, 12
+    decode(instruction_context);
+    REQUIRE(instruction_context.ins_format == FORMATS::IType);
+    REQUIRE(instruction_context.ins_code == INSTRUCTIONS::I_slli);
   }
   SECTION("slt")
   {
+    ri = 0x00732e33; // slt t3, t1, t2
+    decode(instruction_context);
+    REQUIRE(instruction_context.ins_format == FORMATS::RType);
+    REQUIRE(instruction_context.ins_code == INSTRUCTIONS::I_slt);
   }
   SECTION("srai")
   {
+    ri = 0x00732e33; // slt t3, t1, t2
+    decode(instruction_context);
+    REQUIRE(instruction_context.ins_format == FORMATS::RType);
+    REQUIRE(instruction_context.ins_code == INSTRUCTIONS::I_slt);
   }
   SECTION("srli")
   {
+    ri = 0x01835393; // srli t2, t1, 24
+    decode(instruction_context);
+    REQUIRE(instruction_context.ins_format == FORMATS::IType);
+    REQUIRE(instruction_context.ins_code == INSTRUCTIONS::I_srli);
+    REQUIRE(instruction_context.rs1 == 6);
+    REQUIRE(instruction_context.shamt == 24);
+    REQUIRE(instruction_context.rd == 7);
   }
   SECTION("sub")
   {
+    ri = 0x40730e33; // sub t3, t1, t2
+    decode(instruction_context);
+    REQUIRE(instruction_context.ins_format == FORMATS::RType);
+    REQUIRE(instruction_context.ins_code == INSTRUCTIONS::I_sub);
   }
   SECTION("sw")
   {
+    ri = 0x0072a023; // sw t2, 0(t0)
+    decode(instruction_context);
+    REQUIRE(instruction_context.ins_format == FORMATS::SType);
+    REQUIRE(instruction_context.ins_code == INSTRUCTIONS::I_sw);
+    REQUIRE(instruction_context.imm12_s == 0);
   }
   SECTION("xor")
   {
+    ri = 0x00734e33; // xor t3, t1, t2
+    decode(instruction_context);
+    REQUIRE(instruction_context.ins_format == FORMATS::RType);
+    REQUIRE(instruction_context.ins_code == INSTRUCTIONS::I_xor);
   }
   SECTION("ecall")
   {
+    ri = 0x00000073; // ecall
+    decode(instruction_context);
+    REQUIRE(instruction_context.ins_format == FORMATS::IType);
+    REQUIRE(instruction_context.ins_code == INSTRUCTIONS::I_ecall);
   }
 }
 

@@ -91,6 +91,7 @@ void decode(instruction_context_st &ic)
           (get_bit(ri, 20)) << 11 |
           (get_field(ri, 21, 0x3FF)) << 1,
       21);
+  shamt = ic.shamt = get_field(ri, 20, 0x1f);
   opcode = (ri >> 0) & 0x7f;
   funct3 = (ri >> 12) & 0x7;
   funct7 = (ri >> 25) & 0x7f;
@@ -103,10 +104,30 @@ void decode(instruction_context_st &ic)
       {
         ic.ins_code = INSTRUCTIONS::I_add;
       }
+      else if (funct7 == FUNCT7::SUB7)
+      {
+        ic.ins_code = INSTRUCTIONS::I_sub;
+      }
     }
     else if (funct3 == FUNCT3::AND3)
     {
       ic.ins_code = INSTRUCTIONS::I_and;
+    }
+    else if (funct3 == FUNCT3::OR3)
+    {
+      ic.ins_code = INSTRUCTIONS::I_or;
+    }
+    else if (funct3 == FUNCT3::SLTU3)
+    {
+      ic.ins_code = INSTRUCTIONS::I_sltu;
+    }
+    else if (funct3 == FUNCT3::SLT3)
+    {
+      ic.ins_code = INSTRUCTIONS::I_slt;
+    }
+    else if (funct3 == FUNCT3::XOR3)
+    {
+      ic.ins_code = INSTRUCTIONS::I_xor;
     }
   }
   else if (opcode == OPCODES::ILAType)
@@ -119,6 +140,21 @@ void decode(instruction_context_st &ic)
     else if (funct3 == FUNCT3::ANDI3)
     {
       ic.ins_code = INSTRUCTIONS::I_andi;
+    }
+    else if (funct3 == FUNCT3::ORI3)
+    {
+      ic.ins_code = INSTRUCTIONS::I_ori;
+    }
+    else if (funct3 == FUNCT3::SLLI3)
+    {
+      ic.ins_code = INSTRUCTIONS::I_slli;
+    }
+    else if (funct3 == FUNCT3::SRI3)
+    {
+      if (funct7 == FUNCT7::SRLI7)
+      {
+        ic.ins_code = INSTRUCTIONS::I_srli;
+      }
     }
   }
   else if (opcode == OPCODES::AUIPC)
@@ -162,6 +198,49 @@ void decode(instruction_context_st &ic)
   {
     ic.ins_format = FORMATS::UJType;
     ic.ins_code = INSTRUCTIONS::I_jal;
+  }
+  else if (opcode == OPCODES::JALR)
+  {
+    ic.ins_format = FORMATS::IType;
+    ic.ins_code = INSTRUCTIONS::I_jalr;
+  }
+  else if (opcode == OPCODES::ILType)
+  {
+    ic.ins_format = FORMATS::IType;
+    if (funct3 == FUNCT3::LB3)
+    {
+      ic.ins_code = INSTRUCTIONS::I_lb;
+    }
+    else if (funct3 == FUNCT3::LBU3)
+    {
+      ic.ins_code = INSTRUCTIONS::I_lbu;
+    }
+    else if (funct3 == FUNCT3::LW3)
+    {
+      ic.ins_code = INSTRUCTIONS::I_lw;
+    }
+  }
+  else if (opcode == OPCODES::LUI)
+  {
+    ic.ins_format = FORMATS::UType;
+    ic.ins_code = INSTRUCTIONS::I_lui;
+  }
+  else if (opcode == OPCODES::StoreType)
+  {
+    ic.ins_format = FORMATS::SType;
+    if (funct3 == FUNCT3::SB3)
+    {
+      ic.ins_code = INSTRUCTIONS::I_sb;
+    }
+    else if (funct3 == FUNCT3::SW3)
+    {
+      ic.ins_code = INSTRUCTIONS::I_sw;
+    }
+  }
+  else if (opcode == OPCODES::ECALL)
+  {
+    ic.ins_format = FORMATS::IType;
+    ic.ins_code = INSTRUCTIONS::I_ecall;
   }
 }
 
