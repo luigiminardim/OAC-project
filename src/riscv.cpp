@@ -78,6 +78,7 @@ void decode(instruction_context_st &ic)
   rs2 = ic.rs2 = (REGISTERS)(get_field(ri, 20, 0x1f));
   rd = ic.rd = (REGISTERS)(get_field(ri, 7, 0x1f));
   imm12_i = ic.imm12_i = extend32(get_field(ri, 20, 0xfff), 12);
+  imm20_u = ic.imm20_u = extend32(get_field(ri, 12, 0xfffff), 20);
   opcode = (ri >> 0) & 0x7f;
   funct3 = (ri >> 12) & 0x7;
   funct7 = (ri >> 25) & 0x7f;
@@ -107,6 +108,11 @@ void decode(instruction_context_st &ic)
     {
       ic.ins_code = INSTRUCTIONS::I_andi;
     }
+  }
+  else if (opcode == OPCODES::AUIPC)
+  {
+    ic.ins_format = FORMATS::UType;
+    ic.ins_code = INSTRUCTIONS::I_auipc;
   }
 }
 

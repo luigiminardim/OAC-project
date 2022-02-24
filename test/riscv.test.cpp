@@ -108,6 +108,12 @@ TEST_CASE("decode")
   }
   SECTION("auipc")
   {
+    ri = 0x00000397; // auipc t2, 0;
+    decode(instruction_context);
+    REQUIRE(instruction_context.ins_format == FORMATS::UType);
+    REQUIRE(instruction_context.ins_code == INSTRUCTIONS::I_auipc);
+    REQUIRE(instruction_context.imm20_u == 0);
+    REQUIRE(instruction_context.rd == 7);
   }
   SECTION("beq")
   {
