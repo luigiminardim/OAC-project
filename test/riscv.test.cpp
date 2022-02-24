@@ -127,7 +127,7 @@ TEST_CASE("decode")
   }
   SECTION("bne")
   {
-    ri = 0x00629a63; // beq t0, t1, 0x00000014;
+    ri = 0x00629a63; // bne t0, t1, 0x00000014;
     decode(instruction_context);
     REQUIRE(instruction_context.ins_format == FORMATS::SBType);
     REQUIRE(instruction_context.ins_code == INSTRUCTIONS::I_bne);
@@ -137,15 +137,43 @@ TEST_CASE("decode")
   }
   SECTION("bge")
   {
+    ri = 0x00535663; // beq t1, t0, 0x0000000c;
+    decode(instruction_context);
+    REQUIRE(instruction_context.ins_format == FORMATS::SBType);
+    REQUIRE(instruction_context.ins_code == INSTRUCTIONS::I_bge);
+    REQUIRE(instruction_context.rs1 == 6);
+    REQUIRE(instruction_context.rs2 == 5);
+    REQUIRE(instruction_context.imm13 == 0x0000000c);
   }
   SECTION("bgeu")
   {
+    ri = 0x00537663; // beq t1, t0, 0x0000000c;
+    decode(instruction_context);
+    REQUIRE(instruction_context.ins_format == FORMATS::SBType);
+    REQUIRE(instruction_context.ins_code == INSTRUCTIONS::I_bgeu);
+    REQUIRE(instruction_context.rs1 == 6);
+    REQUIRE(instruction_context.rs2 == 5);
+    REQUIRE(instruction_context.imm13 == 0x0000000c);
   }
   SECTION("blt")
   {
+    ri = 0x0062c663; // blt t0, t1, 0x0000000c;
+    decode(instruction_context);
+    REQUIRE(instruction_context.ins_format == FORMATS::SBType);
+    REQUIRE(instruction_context.ins_code == INSTRUCTIONS::I_blt);
+    REQUIRE(instruction_context.rs1 == 5);
+    REQUIRE(instruction_context.rs2 == 6);
+    REQUIRE(instruction_context.imm13 == 0x0000000c);
   }
   SECTION("bltu")
   {
+    ri = 0x0062e663; // bltu t0, t1, 0x0000000c;
+    decode(instruction_context);
+    REQUIRE(instruction_context.ins_format == FORMATS::SBType);
+    REQUIRE(instruction_context.ins_code == INSTRUCTIONS::I_bltu);
+    REQUIRE(instruction_context.rs1 == 5);
+    REQUIRE(instruction_context.rs2 == 6);
+    REQUIRE(instruction_context.imm13 == 0x0000000c);
   }
   SECTION("jal")
   {

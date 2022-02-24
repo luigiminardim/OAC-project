@@ -130,6 +130,26 @@ void decode(instruction_context_st &ic)
     {
       ic.ins_code = INSTRUCTIONS::I_bne;
     }
+    else if (funct3 == FUNCT3::BGE3)
+    {
+      ic.ins_code = INSTRUCTIONS::I_bge;
+    }
+    else if (funct3 == FUNCT3::BGEU3)
+    {
+      ic.ins_code = INSTRUCTIONS::I_bgeu;
+    }
+    else if (funct3 == FUNCT3::BLT3)
+    {
+      ic.ins_code = INSTRUCTIONS::I_blt;
+    }
+    else if (funct3 == FUNCT3::BLT3)
+    {
+      ic.ins_code = INSTRUCTIONS::I_blt;
+    }
+    else if (funct3 == FUNCT3::BLTU3)
+    {
+      ic.ins_code = INSTRUCTIONS::I_bltu;
+    }
   }
 }
 
