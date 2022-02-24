@@ -98,6 +98,13 @@ TEST_CASE("decode")
   }
   SECTION("andi")
   {
+    ri = 0x58437313; // addi t1, t1, 0x584
+    decode(instruction_context);
+    REQUIRE(instruction_context.ins_format == FORMATS::IType);
+    REQUIRE(instruction_context.ins_code == INSTRUCTIONS::I_andi);
+    REQUIRE(instruction_context.rs1 == 6);
+    REQUIRE(instruction_context.imm12_i == 0x584);
+    REQUIRE(instruction_context.rd == 6);
   }
   SECTION("auipc")
   {

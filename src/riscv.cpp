@@ -103,6 +103,10 @@ void decode(instruction_context_st &ic)
     {
       ic.ins_code = INSTRUCTIONS::I_addi;
     }
+    else if (funct3 == FUNCT3::ANDI3)
+    {
+      ic.ins_code = INSTRUCTIONS::I_andi;
+    }
   }
 }
 
