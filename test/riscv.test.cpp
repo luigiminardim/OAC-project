@@ -40,3 +40,25 @@ TEST_CASE("init")
     REQUIRE(gp == 0x00001800);
   }
 }
+
+TEST_CASE("fetch")
+{
+  SECTION("A função deve carregar a instrução endereçada pelo pc.")
+  {
+    mem[1] = 0xffe00313;
+    pc = 4;
+    instruction_context_st instruction_context;
+    fetch(instruction_context);
+    REQUIRE(ri == 0xffe00313);
+    REQUIRE(instruction_context.ir == 0xffe00313);
+  }
+  SECTION("A função deve incrementar pc.")
+  {
+    mem[1] = 0xffe00313;
+    pc = 4;
+    instruction_context_st instruction_context;
+    fetch(instruction_context);
+    REQUIRE(pc == 8);
+    REQUIRE(instruction_context.pc == 8);
+  }
+}

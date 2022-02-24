@@ -1,7 +1,9 @@
-#include "globals.hpp"
 #include <string>
 #include <fstream>
 #include <stdint.h>
+
+#include "globals.hpp"
+#include "trabalho1.hpp"
 
 int32_t mem[MEM_SIZE];
 
@@ -38,7 +40,17 @@ void init()
   gp = 0x00001800;
 }
 
-void fetch(instruction_context_st &ic) { return; }
+/**
+ * @brief  Busca a instrução a ser executada da memória e atualiza o pc.
+ *
+ * @param ic
+ */
+void fetch(instruction_context_st &ic)
+{
+  ic.ir = ri = lw(pc, 0);
+  ic.pc = pc = pc + 4;
+}
+
 void decode(instruction_context_st &ic) { return; }
 void print_instr(instruction_context_st &ic) { return; }
 INSTRUCTIONS get_instr_code(uint32_t opcode, uint32_t func3, uint32_t func7) { return INSTRUCTIONS::I_add; }
