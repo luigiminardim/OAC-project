@@ -12,6 +12,20 @@ uint32_t pc, // contador de programa
     sp,      // stack pointe4r
     gp;      // global pointer
 
+int32_t imm12_i, // constante 12 bits
+    imm12_s,     // constante 12 bits
+    imm13,       // constante 13 bits
+    imm20_u,     // constante 20 bis mais significativos
+    imm21;       // constante 21 bits
+
+uint32_t opcode, // codigo da operacao
+    rs1,         // indice registrador rs
+    rs2,         // indice registrador rt
+    rd,          // indice registrador rd
+    shamt,       // deslocamento
+    funct3,      // campos auxiliares
+    funct7;      // constante instrucao tipo J
+
 /**
  * Ler o código e os dados contidos nos arquivos para a memória do simulador.
  */
@@ -51,25 +65,40 @@ void fetch(instruction_context_st &ic)
   ic.pc = pc = pc + 4;
 }
 
-uint32_t opcode, // codigo da operacao
-    rs1,         // indice registrador rs
-    rs2,         // indice registrador rt
-    rd,          // indice registrador rd
-    shamt,       // deslocamento
-    funct3,      // campos auxiliares
-    funct7;      // constante instrucao tipo J
+int32_t extend32(int32_t number, uint qtd_number_bits)
+{
+  bool is_negative = get_bit(number, qtd_number_bits - 1);
+  int32_t anti_mask = (is_negative ? 0xFFFFFFFFFFFFFFFF : 0x0000000000000000) << qtd_number_bits;
+  return number | anti_mask;
+}
+
 void decode(instruction_context_st &ic)
 {
-  rs1 = ic.rs1 = (REGISTERS)((ri >> 15) & 0x1f);
-  rs2 = ic.rs2 = (REGISTERS)((ri >> 20) & 0x1f);
-  rd = ic.rd = (REGISTERS)((ri >> 7) & 0x1f);
+  rs1 = ic.rs1 = (REGISTERS)(get_field(ri, 15, 0x1f));
+  rs2 = ic.rs2 = (REGISTERS)(get_field(ri, 20, 0x1f));
+  rd = ic.rd = (REGISTERS)(get_field(ri, 7, 0x1f));
+  imm12_i = ic.imm12_i = extend32(get_field(ri, 20, 0xfff), 12);
   opcode = (ri >> 0) & 0x7f;
   funct3 = (ri >> 12) & 0x7;
   funct7 = (ri >> 25) & 0x7f;
-  if (opcode == 0x13 && funct3 == 0x0 && funct7 == 0x00)
+  if (opcode == OPCODES::RegType)
   {
-    ic.ins_code = INSTRUCTIONS::I_add;
     ic.ins_format = FORMATS::RType;
+    if (funct3 == FUNCT3::ADDSUB3)
+    {
+      if (funct7 == FUNCT7::ADD7)
+      {
+        ic.ins_code = INSTRUCTIONS::I_add;
+      }
+    }
+  }
+  else if (opcode == OPCODES::ILAType)
+  {
+    ic.ins_format = FORMATS::IType;
+    if (funct3 == FUNCT3::ADDI3)
+    {
+      ic.ins_code = INSTRUCTIONS::I_addi;
+    }
   }
 }
 

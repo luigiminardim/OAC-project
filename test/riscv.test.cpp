@@ -78,6 +78,13 @@ TEST_CASE("decode")
   }
   SECTION("addi")
   {
+    ri = 0x80030313; // addi t1, t1, -2048
+    decode(instruction_context);
+    REQUIRE(instruction_context.ins_code == INSTRUCTIONS::I_addi);
+    REQUIRE(instruction_context.ins_format == FORMATS::IType);
+    REQUIRE(instruction_context.rs1 == 6);
+    REQUIRE(instruction_context.imm12_i == -2048);
+    REQUIRE(instruction_context.rd == 6);
   }
   SECTION("and")
   {
