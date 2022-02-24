@@ -126,6 +126,10 @@ void decode(instruction_context_st &ic)
     {
       ic.ins_code = INSTRUCTIONS::I_beq;
     }
+    else if (funct3 == FUNCT3::BNE3)
+    {
+      ic.ins_code = INSTRUCTIONS::I_bne;
+    }
   }
 }
 
