@@ -26,6 +26,8 @@ uint32_t opcode, // codigo da operacao
     funct3,      // campos auxiliares
     funct7;      // constante instrucao tipo J
 
+int32_t breg[32];
+
 /**
  * Ler o código e os dados contidos nos arquivos para a memória do simulador.
  */
@@ -276,6 +278,142 @@ void dump_mem(int start_byte, int end_byte, char format)
   std::cout << std::endl;
 }
 
-void execute(instruction_context_st &ic) { return; }
+void execute(instruction_context_st &ic)
+{
+  if (ic.ins_code == INSTRUCTIONS::I_add)
+  {
+    breg[ic.rd] = breg[ic.rs1] + breg[ic.rs2];
+  }
+  else if (ic.ins_code == INSTRUCTIONS::I_addi)
+  {
+    breg[ic.rd] = breg[ic.rs1] + ic.imm12_i;
+  }
+  else if (ic.ins_code == INSTRUCTIONS::I_and)
+  {
+    breg[ic.rd] = breg[ic.rs1] & breg[ic.rs2];
+  }
+  else if (ic.ins_code == INSTRUCTIONS::I_andi)
+  {
+    breg[ic.rd] = breg[ic.rs1] & ic.imm12_i;
+  }
+  else if (ic.ins_code == INSTRUCTIONS::I_auipc)
+  {
+    breg[ic.rd] = ic.pc + (ic.imm12_i << 12);
+  }
+  else if (ic.ins_code == INSTRUCTIONS::I_beq)
+  {
+    if (breg[ic.rs1] == breg[ic.rs2])
+    {
+      ic.pc = ic.pc + ic.imm13;
+    }
+  }
+  else if (ic.ins_code == INSTRUCTIONS::I_bne)
+  {
+    if (breg[ic.rs1] != breg[ic.rs2])
+    {
+      ic.pc = ic.pc + ic.imm13;
+    }
+  }
+  else if (ic.ins_code == INSTRUCTIONS::I_bge)
+  {
+    if (breg[ic.rs1] >= breg[ic.rs2])
+    {
+      ic.pc = ic.pc + ic.imm13;
+    }
+  }
+  else if (ic.ins_code == INSTRUCTIONS::I_bgeu)
+  {
+    if (((uint32_t)breg[ic.rs1]) >= ((uint32_t)breg[ic.rs2]))
+    {
+      ic.pc = ic.pc + ic.imm13;
+    }
+  }
+  else if (ic.ins_code == INSTRUCTIONS::I_blt)
+  {
+    if (breg[ic.rs1] < breg[ic.rs2])
+    {
+      ic.pc = ic.pc + ic.imm13;
+    }
+  }
+  else if (ic.ins_code == INSTRUCTIONS::I_bltu)
+  {
+    if (((uint32_t)breg[ic.rs1]) < ((uint32_t)breg[ic.rs2]))
+    {
+      ic.pc = ic.pc + ic.imm13;
+    }
+  }
+  else if (ic.ins_code == INSTRUCTIONS::I_jal)
+  {
+    breg[ic.rd] = ic.pc + 4;
+    ic.pc = ic.pc + ic.imm13;
+  }
+  else if (ic.ins_code == INSTRUCTIONS::I_jalr)
+  {
+    int32_t rs1 = breg[ic.rs1];
+    breg[ic.rd] = ic.pc + 4;
+    ic.pc = rs1 + ic.imm12_i;
+  }
+  else if (ic.ins_code == INSTRUCTIONS::I_lb)
+  {
+    breg[ic.rd] = lb(breg[ic.rs1], ic.imm12_i);
+  }
+  else if (ic.ins_code == INSTRUCTIONS::I_or)
+  {
+    breg[ic.rd] = breg[ic.rs1] | breg[ic.rs2];
+  }
+  else if (ic.ins_code == INSTRUCTIONS::I_lbu)
+  {
+    breg[ic.rd] = lbu(breg[ic.rs1], ic.imm12_i);
+  }
+  else if (ic.ins_code == INSTRUCTIONS::I_lw)
+  {
+    breg[ic.rd] = lw(breg[ic.rs1], ic.imm12_i);
+  }
+  else if (ic.ins_code == INSTRUCTIONS::I_lui)
+  {
+    breg[ic.rd] = ic.imm12_i << 12;
+  }
+  else if (ic.ins_code == INSTRUCTIONS::I_sltu)
+  {
+    breg[ic.rd] = ((uint32_t)breg[ic.rs1]) < ((uint32_t)breg[ic.rs2]) ? 1 : 0;
+  }
+  else if (ic.ins_code == INSTRUCTIONS::I_ori)
+  {
+    breg[ic.rd] = breg[ic.rs1] | ic.imm12_i;
+  }
+  else if (ic.ins_code == INSTRUCTIONS::I_sb)
+  {
+    sb(breg[ic.rs1], ic.imm12_s, breg[ic.rs2]);
+  }
+  else if (ic.ins_code == INSTRUCTIONS::I_slli)
+  {
+    breg[ic.rd] = breg[ic.rs1] << ic.shamt;
+  }
+  else if (ic.ins_code == INSTRUCTIONS::I_slt)
+  {
+    breg[ic.rd] = breg[ic.rs1] < breg[ic.rs2] ? 1 : 0;
+  }
+  else if (ic.ins_code == INSTRUCTIONS::I_srai)
+  {
+    breg[ic.rd] = breg[ic.rs1] >> ic.shamt;
+  }
+  else if (ic.ins_code == INSTRUCTIONS::I_srli)
+  {
+    breg[ic.rd] = ((uint32_t)breg[ic.rs1]) >> ic.shamt;
+  }
+  else if (ic.ins_code == INSTRUCTIONS::I_sub)
+  {
+    breg[ic.rd] = breg[ic.rs1] - breg[ic.rs2];
+  }
+  else if (ic.ins_code == INSTRUCTIONS::I_sw)
+  {
+    sw(breg[ic.rs1], ic.imm12_s, breg[ic.rs2]);
+  }
+  else if (ic.ins_code == INSTRUCTIONS::I_xor)
+  {
+    breg[ic.rd] = breg[ic.rs1] ^ breg[ic.rs2];
+  }
+}
+
 void step() { return; }
 void run() { return; }

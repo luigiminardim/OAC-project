@@ -328,91 +328,367 @@ TEST_CASE("decode")
 
 TEST_CASE("execute")
 {
+  instruction_context_st ic;
+  SECTION("add")
   {
+    ic.ins_code = INSTRUCTIONS::I_add;
+    ic.rs1 = REGISTERS::T1;
+    ic.rs2 = REGISTERS::T2;
+    ic.rd = REGISTERS::T3;
+    breg[REGISTERS::T1] = 94;
+    breg[REGISTERS::T2] = -64;
+    execute(ic);
+    REQUIRE(breg[REGISTERS::T3] == 94 + (-64));
   }
   SECTION("addi")
   {
+    ic.ins_code = INSTRUCTIONS::I_addi;
+    ic.rs1 = REGISTERS::T1;
+    ic.rd = REGISTERS::T3;
+    breg[REGISTERS::T1] = 94;
+    ic.imm12_i = -64;
+    execute(ic);
+    REQUIRE(breg[REGISTERS::T3] == 94 + (-64));
   }
   SECTION("and")
   {
+    ic.ins_code = INSTRUCTIONS::I_and;
+    ic.rs1 = REGISTERS::T1;
+    ic.rs2 = REGISTERS::T2;
+    ic.rd = REGISTERS::T3;
+    breg[REGISTERS::T1] = 0xFF00FF00;
+    breg[REGISTERS::T2] = 0x0000FFFF;
+    execute(ic);
+    REQUIRE(breg[REGISTERS::T3] == 0x0000FF00);
   }
   SECTION("andi")
   {
+    ic.ins_code = INSTRUCTIONS::I_andi;
+    ic.rs1 = REGISTERS::T1;
+    ic.rd = REGISTERS::T3;
+    breg[REGISTERS::T1] = 0x00FF00FF;
+    ic.imm12_i = 0x0FFFF;
+    execute(ic);
+    REQUIRE(breg[REGISTERS::T3] == 0x000000FF);
   }
   SECTION("auipc")
   {
+    ic.ins_code = INSTRUCTIONS::I_auipc;
+    ic.pc = 0x04;
+    ic.rd = REGISTERS::T3;
+    ic.imm12_i = 0x0FFFF;
+    execute(ic);
+    REQUIRE(breg[REGISTERS::T3] == 0x0FFFF004);
   }
   SECTION("beq")
   {
+    ic.ins_code = INSTRUCTIONS::I_beq;
+    ic.rs1 = REGISTERS::T1;
+    ic.rs2 = REGISTERS::T2;
+    breg[REGISTERS::T1] = 6;
+    breg[REGISTERS::T2] = 5;
+    ic.pc = 0x04;
+    ic.imm13 = 0x0000000c;
+    execute(ic);
+    REQUIRE(ic.pc == 0x04);
+
+    breg[REGISTERS::T1] = 5;
+    breg[REGISTERS::T2] = 5;
+    ic.pc = 0x04;
+    ic.imm13 = 0x0000000c;
+    execute(ic);
+    REQUIRE(ic.pc == 0x04 + 0x0000000c);
   }
   SECTION("bne")
   {
+    ic.ins_code = INSTRUCTIONS::I_bne;
+    ic.rs1 = REGISTERS::T1;
+    ic.rs2 = REGISTERS::T2;
+    breg[REGISTERS::T1] = 6;
+    breg[REGISTERS::T2] = 5;
+    ic.pc = 0x04;
+    ic.imm13 = 0x0000000c;
+    execute(ic);
+    REQUIRE(ic.pc == 0x04 + 0x0000000c);
+
+    breg[REGISTERS::T1] = 5;
+    breg[REGISTERS::T2] = 5;
+    ic.pc = 0x04;
+    ic.imm13 = 0x0000000c;
+    execute(ic);
+    REQUIRE(ic.pc == 0x04);
   }
   SECTION("bge")
   {
+    ic.ins_code = INSTRUCTIONS::I_bge;
+    ic.rs1 = REGISTERS::T1;
+    ic.rs2 = REGISTERS::T2;
+    breg[REGISTERS::T1] = 6;
+    breg[REGISTERS::T2] = 5;
+    ic.pc = 0x04;
+    ic.imm13 = 0x0000000c;
+    execute(ic);
+    REQUIRE(ic.pc == 0x04 + 0x0000000c);
+
+    breg[REGISTERS::T1] = 4;
+    breg[REGISTERS::T2] = 5;
+    ic.pc = 0x04;
+    ic.imm13 = 0x0000000c;
+    execute(ic);
+    REQUIRE(ic.pc == 0x04);
   }
   SECTION("bgeu")
   {
+    ic.ins_code = INSTRUCTIONS::I_bgeu;
+    ic.rs1 = REGISTERS::T1;
+    ic.rs2 = REGISTERS::T2;
+    breg[REGISTERS::T1] = 0x10000000;
+    breg[REGISTERS::T2] = 0x10000001;
+    ic.pc = 0x04;
+    ic.imm13 = 0x0000000c;
+    execute(ic);
+    REQUIRE(ic.pc == 0x04);
+
+    breg[REGISTERS::T1] = 0x10000000;
+    breg[REGISTERS::T2] = 0x10000000;
+    ic.pc = 0x04;
+    ic.imm13 = 0x0000000c;
+    execute(ic);
+    REQUIRE(ic.pc == 0x04 + 0x0000000c);
   }
   SECTION("blt")
   {
+    ic.ins_code = INSTRUCTIONS::I_blt;
+    ic.rs1 = REGISTERS::T1;
+    ic.rs2 = REGISTERS::T2;
+    breg[REGISTERS::T1] = 6;
+    breg[REGISTERS::T2] = 5;
+    ic.pc = 0x04;
+    ic.imm13 = 0x0000000c;
+    execute(ic);
+    REQUIRE(ic.pc == 0x04);
+
+    breg[REGISTERS::T1] = 5;
+    breg[REGISTERS::T2] = 6;
+    ic.pc = 0x04;
+    ic.imm13 = 0x0000000c;
+    execute(ic);
+    REQUIRE(ic.pc == 0x04 + 0x0000000c);
   }
   SECTION("bltu")
   {
+    ic.ins_code = INSTRUCTIONS::I_bltu;
+    ic.rs1 = REGISTERS::T1;
+    ic.rs2 = REGISTERS::T2;
+    breg[REGISTERS::T1] = 0x10000000;
+    breg[REGISTERS::T2] = 0x10000000;
+    ic.pc = 0x04;
+    ic.imm13 = 0x0000000c;
+    execute(ic);
+    REQUIRE(ic.pc == 0x04);
+
+    breg[REGISTERS::T1] = 0x10000000;
+    breg[REGISTERS::T2] = 0x10000001;
+    ic.pc = 0x04;
+    ic.imm13 = 0x0000000c;
+    execute(ic);
+    REQUIRE(ic.pc == 0x04 + 0x0000000c);
   }
   SECTION("jal")
   {
+    ic.ins_code = INSTRUCTIONS::I_jal;
+    ic.rd = REGISTERS::T3;
+    ic.pc = 0x04;
+    ic.pc = 0x04;
+    ic.imm13 = 0x0000000c;
+    execute(ic);
+    REQUIRE(breg[REGISTERS::T3] == 0x08);
+    REQUIRE(ic.pc == 0x04 + 0x0000000c);
   }
   SECTION("jalr")
   {
+    ic.ins_code = INSTRUCTIONS::I_jalr;
+    ic.rs1 = REGISTERS::T1;
+    ic.rd = REGISTERS::T3;
+    breg[REGISTERS::T1] = 0xfff00000;
+    ic.pc = 0x04;
+    ic.imm12_i = 0x0000c;
+    execute(ic);
+    REQUIRE(breg[REGISTERS::T3] == 0x08);
+    REQUIRE(ic.pc == 0xfff00000 + 0x0000c);
   }
   SECTION("lb")
   {
+    ic.ins_code = INSTRUCTIONS::I_lb;
+    ic.rs1 = REGISTERS::T1;
+    ic.rd = REGISTERS::T3;
+    ic.imm12_i = 0x004;
+    breg[REGISTERS::T1] = 0x000000ff;
+    ((char *)mem)[0x004 + 0x000000ff] = 0xdd;
+    execute(ic);
+    REQUIRE(breg[REGISTERS::T3] == 0xffffffdd);
   }
   SECTION("or")
   {
+    ic.ins_code = INSTRUCTIONS::I_or;
+    ic.rs1 = REGISTERS::T1;
+    ic.rs2 = REGISTERS::T2;
+    ic.rd = REGISTERS::T3;
+    breg[REGISTERS::T1] = 0xFF00FF00;
+    breg[REGISTERS::T2] = 0x0000FFFF;
+    execute(ic);
+    REQUIRE(breg[REGISTERS::T3] == 0xFF00FFFF);
   }
   SECTION("lbu")
   {
+    ic.ins_code = INSTRUCTIONS::I_lbu;
+    ic.rs1 = REGISTERS::T1;
+    ic.rd = REGISTERS::T3;
+    ic.imm12_i = 0x004;
+    breg[REGISTERS::T1] = 0x000000ff;
+    ((char *)mem)[0x004 + 0x000000ff] = 0xdd;
+    execute(ic);
+    REQUIRE(breg[REGISTERS::T3] == 0x000000dd);
   }
   SECTION("lw")
   {
+    ic.ins_code = INSTRUCTIONS::I_lw;
+    ic.rs1 = REGISTERS::T1;
+    ic.rd = REGISTERS::T3;
+    ic.imm12_i = 0x00004;
+    breg[REGISTERS::T1] = 0x000000f0;
+    mem[0x00004 + 0x000000f0 / 4] = 0xaabbccdd;
+    execute(ic);
+    REQUIRE(breg[REGISTERS::T3] == 0xaabbccdd);
   }
   SECTION("lui")
   {
+    ic.ins_code = INSTRUCTIONS::I_lui;
+    ic.rd = REGISTERS::T3;
+    ic.imm12_i = 0xfffffabc;
+    execute(ic);
+    REQUIRE(breg[REGISTERS::T3] == 0xffabc000);
   }
   SECTION("nop")
   {
+    execute(ic);
+    REQUIRE(REGISTERS::ZERO == 0);
   }
   SECTION("sltu")
   {
+    ic.ins_code = INSTRUCTIONS::I_sltu;
+    ic.rs1 = REGISTERS::T1;
+    ic.rs2 = REGISTERS::T2;
+    ic.rd = REGISTERS::T3;
+    breg[REGISTERS::T1] = 0x10000000;
+    breg[REGISTERS::T2] = 0x10000001;
+    execute(ic);
+    REQUIRE(breg[REGISTERS::T3] == 1);
+
+    breg[REGISTERS::T1] = 0x10000001;
+    breg[REGISTERS::T2] = 0x10000000;
+    execute(ic);
+    REQUIRE(breg[REGISTERS::T3] == 0);
   }
   SECTION("ori")
   {
+    ic.ins_code = INSTRUCTIONS::I_ori;
+    ic.rs1 = REGISTERS::T1;
+    ic.rd = REGISTERS::T3;
+    breg[REGISTERS::T1] = 0xFF00FF00;
+    ic.imm12_i = 0x0FFFF;
+    execute(ic);
+    REQUIRE(breg[REGISTERS::T3] == 0xFF00FFFF);
   }
   SECTION("sb")
   {
+    ic.ins_code = INSTRUCTIONS::I_sb;
+    ic.rs1 = REGISTERS::T1;
+    ic.rs2 = REGISTERS::T2;
+    ic.imm12_s = 0x0000f;
+    breg[REGISTERS::T1] = DATA_SEGMENT_START;
+    breg[REGISTERS::T2] = 'a';
+    execute(ic);
+    REQUIRE(((int8_t *)mem)[0x0000f + DATA_SEGMENT_START] == 'a');
   }
   SECTION("slli")
   {
+    ic.ins_code = INSTRUCTIONS::I_slli;
+    ic.rs1 = REGISTERS::T1;
+    ic.rd = REGISTERS::T3;
+    breg[REGISTERS::T1] = 0xFF00FF00;
+    ic.shamt = 0x00004;
+    execute(ic);
+    REQUIRE(breg[REGISTERS::T3] == 0xF00FF000);
   }
   SECTION("slt")
   {
+    ic.ins_code = INSTRUCTIONS::I_slt;
+    ic.rs1 = REGISTERS::T1;
+    ic.rs2 = REGISTERS::T2;
+    ic.rd = REGISTERS::T3;
+    breg[REGISTERS::T1] = 5;
+    breg[REGISTERS::T2] = 6;
+    execute(ic);
+    REQUIRE(breg[REGISTERS::T3] == 1);
+
+    breg[REGISTERS::T1] = 5;
+    breg[REGISTERS::T2] = 5;
+    execute(ic);
+    REQUIRE(breg[REGISTERS::T3] == 0);
   }
   SECTION("srai")
   {
+    ic.ins_code = INSTRUCTIONS::I_srai;
+    ic.rs1 = REGISTERS::T1;
+    ic.rd = REGISTERS::T3;
+    breg[REGISTERS::T1] = 0xff00ff00;
+    ic.shamt = 0x00004;
+    execute(ic);
+    REQUIRE(breg[REGISTERS::T3] == 0xfff00ff0);
   }
   SECTION("srli")
   {
+    ic.ins_code = INSTRUCTIONS::I_srli;
+    ic.rs1 = REGISTERS::T1;
+    ic.rd = REGISTERS::T3;
+    breg[REGISTERS::T1] = 0xff00ff00;
+    ic.shamt = 0x00004;
+    execute(ic);
+    REQUIRE(breg[REGISTERS::T3] == 0x0ff00ff0);
   }
   SECTION("sub")
   {
+    ic.ins_code = INSTRUCTIONS::I_sub;
+    ic.rs1 = REGISTERS::T1;
+    ic.rs2 = REGISTERS::T2;
+    ic.rd = REGISTERS::T3;
+    breg[REGISTERS::T1] = 94;
+    breg[REGISTERS::T2] = -64;
+    execute(ic);
+    REQUIRE(breg[REGISTERS::T3] == 94 - (-64));
   }
   SECTION("sw")
   {
+    ic.ins_code = INSTRUCTIONS::I_sw;
+    ic.rs1 = REGISTERS::T1;
+    ic.rs2 = REGISTERS::T2;
+    ic.imm12_s = 0x0000f;
+    breg[REGISTERS::T2] = 0xab;
+    breg[REGISTERS::T1] = DATA_SEGMENT_START;
+    execute(ic);
+    REQUIRE(mem[0x0000f + DATA_SEGMENT_START / 4] == 0xab);
   }
   SECTION("xor")
   {
+    ic.ins_code = INSTRUCTIONS::I_xor;
+    ic.rs1 = REGISTERS::T1;
+    ic.rs2 = REGISTERS::T2;
+    ic.rd = REGISTERS::T3;
+    breg[REGISTERS::T1] = 0xff00ff00;
+    breg[REGISTERS::T2] = 0x0000ffff;
+    execute(ic);
+    REQUIRE(breg[REGISTERS::T3] == 0xff0000ff);
   }
   SECTION("ecall")
   {
