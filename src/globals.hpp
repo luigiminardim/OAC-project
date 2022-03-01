@@ -187,28 +187,6 @@ enum
 };
 extern int32_t mem[MEM_SIZE];
 
-//
-// Identificacao de tipo de dado
-//
-enum DATA_TYPE
-{
-  BYTE = 4,
-  INTEGER = 1
-};
-
-//
-// Word size: 2ˆ(size) em bytes
-//
-enum WORD_SIZE_E
-{
-  BYTE_SIZE = 0,
-  HALF_SIZE = 1,
-  WORD_SIZE = 2,
-  DOUBLE_SIZE = 3
-};
-
-const WORD_SIZE_E WSIZE = WORD_SIZE;
-
 extern int32_t breg[32];
 
 extern uint32_t pc;
@@ -222,25 +200,43 @@ struct instruction_context_st
   int32_t shamt, imm12_i, imm12_s, imm13, imm20_u, imm21;
 };
 
-extern instruction_context_st instr_info;
-
-extern string instr_str[39];
-
 //
 // Funcoes definidas em riscv.cpp
 //
 
 void init();
+
+/**
+ * @brief  Busca a instrução a ser executada da memória e atualiza o pc.
+ *
+ * @param ic
+ */
 void fetch(instruction_context_st &ic);
+
 void decode(instruction_context_st &ic);
-void print_instr(instruction_context_st &ic);
-INSTRUCTIONS get_instr_code(uint32_t opcode, uint32_t func3, uint32_t func7);
-FORMATS get_i_format(uint32_t opcode, uint32_t func3, uint32_t func7);
-void debug_decode(instruction_context_st &ic);
+
 void dump_breg();
-void dump_asm(int start, int end);
+
+/**
+ * @brief Imprime o conteúdo da memória a partir do endereço start até o endereço end. O formato
+ * pode ser em hexa (‘h’) ou decimal (‘d’).
+ *
+ * @param start_byte
+ * Endereço inicial.
+ *
+ * @param end_byte
+ * Endereço final
+ *
+ * @param format
+ * 'h' para hexa ou 'd' para decimal
+ */
 void dump_mem(int start_byte, int end_byte, char format);
+
+/**
+ * Ler o código e os dados contidos nos arquivos para a memória do simulador.
+ */
 int load_mem(const char *fn, int start);
+
 void execute(instruction_context_st &ic);
 void step();
 void run();

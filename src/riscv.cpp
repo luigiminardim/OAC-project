@@ -11,9 +11,6 @@ uint32_t pc;
 
 int32_t breg[32];
 
-/**
- * Ler o código e os dados contidos nos arquivos para a memória do simulador.
- */
 int load_mem(const char *fn, int start)
 {
   std::ifstream file(fn, std::ifstream::binary);
@@ -38,11 +35,6 @@ void init()
   breg[REGISTERS::GP] = 0x00001800;
 }
 
-/**
- * @brief  Busca a instrução a ser executada da memória e atualiza o pc.
- *
- * @param ic
- */
 void fetch(instruction_context_st &ic)
 {
   ic.pc = pc;
@@ -237,11 +229,6 @@ void decode(instruction_context_st &ic)
   }
 }
 
-void print_instr(instruction_context_st &ic) { return; }
-INSTRUCTIONS get_instr_code(uint32_t opcode, uint32_t func3, uint32_t func7) { return INSTRUCTIONS::I_add; }
-FORMATS get_i_format(uint32_t opcode, uint32_t func3, uint32_t func7) { return FORMATS::RType; }
-void debug_decode(instruction_context_st &ic) { return; }
-
 void dump_breg()
 {
   std::cout << "{";
@@ -254,19 +241,6 @@ void dump_breg()
 
 void dump_asm(int start, int end) { return; }
 
-/**
- * @brief Imprime o conteúdo da memória a partir do endereço start até o endereço end. O formato
- * pode ser em hexa (‘h’) ou decimal (‘d’).
- *
- * @param start_byte
- * Endereço inicial.
- *
- * @param end_byte
- * Endereço final
- *
- * @param format
- * 'h' para hexa ou 'd' para decimal
- */
 void dump_mem(int start_byte, int end_byte, char format)
 {
   auto base = format == 'h' ? std::hex : std::dec;
