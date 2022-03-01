@@ -35,9 +35,8 @@ TEST_CASE("init")
   {
     init();
     REQUIRE(pc == 0x00000000);
-    REQUIRE(ri == 0x00000000);
-    REQUIRE(sp == 0x00003ffc);
-    REQUIRE(gp == 0x00001800);
+    REQUIRE(breg[REGISTERS::SP] == 0x00003ffc);
+    REQUIRE(breg[REGISTERS::GP] == 0x00001800);
   }
 }
 
@@ -47,19 +46,18 @@ TEST_CASE("fetch")
   {
     mem[1] = 0xffe00313;
     pc = 4;
-    instruction_context_st instruction_context;
-    fetch(instruction_context);
-    REQUIRE(ri == 0xffe00313);
-    REQUIRE(instruction_context.ir == 0xffe00313);
+    instruction_context_st ic;
+    fetch(ic);
+    REQUIRE(ic.ir == 0xffe00313);
   }
   SECTION("A função deve incrementar pc.")
   {
     mem[1] = 0xffe00313;
     pc = 4;
-    instruction_context_st instruction_context;
-    fetch(instruction_context);
+    instruction_context_st ic;
+    fetch(ic);
+    REQUIRE(ic.pc == 4);
     REQUIRE(pc == 8);
-    REQUIRE(instruction_context.pc == 8);
   }
 }
 
@@ -68,7 +66,7 @@ TEST_CASE("decode")
   instruction_context_st instruction_context;
   SECTION("add")
   {
-    ri = 0x00730e33; // add t3, t1, t2
+    instruction_context.ir = 0x00730e33; // add t3, t1, t2
     decode(instruction_context);
     REQUIRE(instruction_context.ins_code == INSTRUCTIONS::I_add);
     REQUIRE(instruction_context.ins_format == FORMATS::RType);
@@ -78,7 +76,7 @@ TEST_CASE("decode")
   }
   SECTION("addi")
   {
-    ri = 0x80030313; // addi t1, t1, -2048
+    instruction_context.ir = 0x80030313; // addi t1, t1, -2048
     decode(instruction_context);
     REQUIRE(instruction_context.ins_code == INSTRUCTIONS::I_addi);
     REQUIRE(instruction_context.ins_format == FORMATS::IType);
@@ -88,7 +86,7 @@ TEST_CASE("decode")
   }
   SECTION("and")
   {
-    ri = 0x00737e33; // and t3, t1, t2
+    instruction_context.ir = 0x00737e33; // and t3, t1, t2
     decode(instruction_context);
     REQUIRE(instruction_context.ins_code == INSTRUCTIONS::I_and);
     REQUIRE(instruction_context.ins_format == FORMATS::RType);
@@ -98,7 +96,7 @@ TEST_CASE("decode")
   }
   SECTION("andi")
   {
-    ri = 0x58437313; // addi t1, t1, 0x584
+    instruction_context.ir = 0x58437313; // addi t1, t1, 0x584
     decode(instruction_context);
     REQUIRE(instruction_context.ins_format == FORMATS::IType);
     REQUIRE(instruction_context.ins_code == INSTRUCTIONS::I_andi);
@@ -108,7 +106,7 @@ TEST_CASE("decode")
   }
   SECTION("auipc")
   {
-    ri = 0x00000397; // auipc t2, 0;
+    instruction_context.ir = 0x00000397; // auipc t2, 0;
     decode(instruction_context);
     REQUIRE(instruction_context.ins_format == FORMATS::UType);
     REQUIRE(instruction_context.ins_code == INSTRUCTIONS::I_auipc);
@@ -117,7 +115,7 @@ TEST_CASE("decode")
   }
   SECTION("beq")
   {
-    ri = 0x00628663; // beq t0, t1, 0x0000000c;
+    instruction_context.ir = 0x00628663; // beq t0, t1, 0x0000000c;
     decode(instruction_context);
     REQUIRE(instruction_context.ins_format == FORMATS::SBType);
     REQUIRE(instruction_context.ins_code == INSTRUCTIONS::I_beq);
@@ -127,7 +125,7 @@ TEST_CASE("decode")
   }
   SECTION("bne")
   {
-    ri = 0x00629a63; // bne t0, t1, 0x00000014;
+    instruction_context.ir = 0x00629a63; // bne t0, t1, 0x00000014;
     decode(instruction_context);
     REQUIRE(instruction_context.ins_format == FORMATS::SBType);
     REQUIRE(instruction_context.ins_code == INSTRUCTIONS::I_bne);
@@ -137,7 +135,7 @@ TEST_CASE("decode")
   }
   SECTION("bge")
   {
-    ri = 0x00535663; // beq t1, t0, 0x0000000c;
+    instruction_context.ir = 0x00535663; // beq t1, t0, 0x0000000c;
     decode(instruction_context);
     REQUIRE(instruction_context.ins_format == FORMATS::SBType);
     REQUIRE(instruction_context.ins_code == INSTRUCTIONS::I_bge);
@@ -147,7 +145,7 @@ TEST_CASE("decode")
   }
   SECTION("bgeu")
   {
-    ri = 0x00537663; // beq t1, t0, 0x0000000c;
+    instruction_context.ir = 0x00537663; // beq t1, t0, 0x0000000c;
     decode(instruction_context);
     REQUIRE(instruction_context.ins_format == FORMATS::SBType);
     REQUIRE(instruction_context.ins_code == INSTRUCTIONS::I_bgeu);
@@ -157,7 +155,7 @@ TEST_CASE("decode")
   }
   SECTION("blt")
   {
-    ri = 0x0062c663; // blt t0, t1, 0x0000000c;
+    instruction_context.ir = 0x0062c663; // blt t0, t1, 0x0000000c;
     decode(instruction_context);
     REQUIRE(instruction_context.ins_format == FORMATS::SBType);
     REQUIRE(instruction_context.ins_code == INSTRUCTIONS::I_blt);
@@ -167,7 +165,7 @@ TEST_CASE("decode")
   }
   SECTION("bltu")
   {
-    ri = 0x0062e663; // bltu t0, t1, 0x0000000c;
+    instruction_context.ir = 0x0062e663; // bltu t0, t1, 0x0000000c;
     decode(instruction_context);
     REQUIRE(instruction_context.ins_format == FORMATS::SBType);
     REQUIRE(instruction_context.ins_code == INSTRUCTIONS::I_bltu);
@@ -177,7 +175,7 @@ TEST_CASE("decode")
   }
   SECTION("jal")
   {
-    ri = 0x3a0000ef; // jal ra, 0x000003a0;
+    instruction_context.ir = 0x3a0000ef; // jal ra, 0x000003a0;
     decode(instruction_context);
     REQUIRE(instruction_context.ins_format == FORMATS::UJType);
     REQUIRE(instruction_context.ins_code == INSTRUCTIONS::I_jal);
@@ -186,7 +184,7 @@ TEST_CASE("decode")
   }
   SECTION("jalr")
   {
-    ri = 0x00040067; // jal zero, s0, 0;
+    instruction_context.ir = 0x00040067; // jal zero, s0, 0;
     decode(instruction_context);
     REQUIRE(instruction_context.ins_format == FORMATS::IType);
     REQUIRE(instruction_context.ins_code == INSTRUCTIONS::I_jalr);
@@ -196,7 +194,7 @@ TEST_CASE("decode")
   }
   SECTION("lb")
   {
-    ri = 0x00028303; // addi t1, 0(t0)
+    instruction_context.ir = 0x00028303; // addi t1, 0(t0)
     decode(instruction_context);
     REQUIRE(instruction_context.ins_format == FORMATS::IType);
     REQUIRE(instruction_context.ins_code == INSTRUCTIONS::I_lb);
@@ -206,7 +204,7 @@ TEST_CASE("decode")
   }
   SECTION("or")
   {
-    ri = 0x00736e33; // or t3, t1, t2
+    instruction_context.ir = 0x00736e33; // or t3, t1, t2
     decode(instruction_context);
     REQUIRE(instruction_context.ins_format == FORMATS::RType);
     REQUIRE(instruction_context.ins_code == INSTRUCTIONS::I_or);
@@ -216,7 +214,7 @@ TEST_CASE("decode")
   }
   SECTION("lbu")
   {
-    ri = 0x0002c303; // lbu t1, 0(t0)
+    instruction_context.ir = 0x0002c303; // lbu t1, 0(t0)
     decode(instruction_context);
     REQUIRE(instruction_context.ins_format == FORMATS::IType);
     REQUIRE(instruction_context.ins_code == INSTRUCTIONS::I_lbu);
@@ -226,7 +224,7 @@ TEST_CASE("decode")
   }
   SECTION("lw")
   {
-    ri = 0x0002a303; // lw t1, 0(t0)
+    instruction_context.ir = 0x0002a303; // lw t1, 0(t0)
     decode(instruction_context);
     REQUIRE(instruction_context.ins_format == FORMATS::IType);
     REQUIRE(instruction_context.ins_code == INSTRUCTIONS::I_lw);
@@ -236,7 +234,7 @@ TEST_CASE("decode")
   }
   SECTION("lui")
   {
-    ri = 0x00009337; // lui t1, 9
+    instruction_context.ir = 0x00009337; // lui t1, 9
     decode(instruction_context);
     REQUIRE(instruction_context.ins_format == FORMATS::UType);
     REQUIRE(instruction_context.ins_code == INSTRUCTIONS::I_lui);
@@ -245,49 +243,49 @@ TEST_CASE("decode")
   }
   SECTION("sltu")
   {
-    ri = 0x00003033; // sltu zero, zero, zero
+    instruction_context.ir = 0x00003033; // sltu zero, zero, zero
     decode(instruction_context);
     REQUIRE(instruction_context.ins_format == FORMATS::RType);
     REQUIRE(instruction_context.ins_code == INSTRUCTIONS::I_sltu);
   }
   SECTION("ori")
   {
-    ri = 0x0036313; // sltu zero, zero, zero
+    instruction_context.ir = 0x0036313; // sltu zero, zero, zero
     decode(instruction_context);
     REQUIRE(instruction_context.ins_format == FORMATS::IType);
     REQUIRE(instruction_context.ins_code == INSTRUCTIONS::I_ori);
   }
   SECTION("sb")
   {
-    ri = 0x007280a3; // sb t2, 1(t0)
+    instruction_context.ir = 0x007280a3; // sb t2, 1(t0)
     decode(instruction_context);
     REQUIRE(instruction_context.ins_format == FORMATS::SType);
     REQUIRE(instruction_context.ins_code == INSTRUCTIONS::I_sb);
   }
   SECTION("slli")
   {
-    ri = 0x00c39393; // slli t2, t2, 12
+    instruction_context.ir = 0x00c39393; // slli t2, t2, 12
     decode(instruction_context);
     REQUIRE(instruction_context.ins_format == FORMATS::IType);
     REQUIRE(instruction_context.ins_code == INSTRUCTIONS::I_slli);
   }
   SECTION("slt")
   {
-    ri = 0x00732e33; // slt t3, t1, t2
+    instruction_context.ir = 0x00732e33; // slt t3, t1, t2
     decode(instruction_context);
     REQUIRE(instruction_context.ins_format == FORMATS::RType);
     REQUIRE(instruction_context.ins_code == INSTRUCTIONS::I_slt);
   }
   SECTION("srai")
   {
-    ri = 0x00732e33; // slt t3, t1, t2
+    instruction_context.ir = 0x00732e33; // slt t3, t1, t2
     decode(instruction_context);
     REQUIRE(instruction_context.ins_format == FORMATS::RType);
     REQUIRE(instruction_context.ins_code == INSTRUCTIONS::I_slt);
   }
   SECTION("srli")
   {
-    ri = 0x01835393; // srli t2, t1, 24
+    instruction_context.ir = 0x01835393; // srli t2, t1, 24
     decode(instruction_context);
     REQUIRE(instruction_context.ins_format == FORMATS::IType);
     REQUIRE(instruction_context.ins_code == INSTRUCTIONS::I_srli);
@@ -297,14 +295,14 @@ TEST_CASE("decode")
   }
   SECTION("sub")
   {
-    ri = 0x40730e33; // sub t3, t1, t2
+    instruction_context.ir = 0x40730e33; // sub t3, t1, t2
     decode(instruction_context);
     REQUIRE(instruction_context.ins_format == FORMATS::RType);
     REQUIRE(instruction_context.ins_code == INSTRUCTIONS::I_sub);
   }
   SECTION("sw")
   {
-    ri = 0x0072a023; // sw t2, 0(t0)
+    instruction_context.ir = 0x0072a023; // sw t2, 0(t0)
     decode(instruction_context);
     REQUIRE(instruction_context.ins_format == FORMATS::SType);
     REQUIRE(instruction_context.ins_code == INSTRUCTIONS::I_sw);
@@ -312,14 +310,14 @@ TEST_CASE("decode")
   }
   SECTION("xor")
   {
-    ri = 0x00734e33; // xor t3, t1, t2
+    instruction_context.ir = 0x00734e33; // xor t3, t1, t2
     decode(instruction_context);
     REQUIRE(instruction_context.ins_format == FORMATS::RType);
     REQUIRE(instruction_context.ins_code == INSTRUCTIONS::I_xor);
   }
   SECTION("ecall")
   {
-    ri = 0x00000073; // ecall
+    instruction_context.ir = 0x00000073; // ecall
     decode(instruction_context);
     REQUIRE(instruction_context.ins_format == FORMATS::IType);
     REQUIRE(instruction_context.ins_code == INSTRUCTIONS::I_ecall);
@@ -376,7 +374,7 @@ TEST_CASE("execute")
     ic.ins_code = INSTRUCTIONS::I_auipc;
     ic.pc = 0x04;
     ic.rd = REGISTERS::T3;
-    ic.imm12_i = 0x0FFFF;
+    ic.imm20_u = 0x0FFFF;
     execute(ic);
     REQUIRE(breg[REGISTERS::T3] == 0x0FFFF004);
   }
@@ -387,17 +385,17 @@ TEST_CASE("execute")
     ic.rs2 = REGISTERS::T2;
     breg[REGISTERS::T1] = 6;
     breg[REGISTERS::T2] = 5;
-    ic.pc = 0x04;
+    pc = ic.pc = 0x04;
     ic.imm13 = 0x0000000c;
     execute(ic);
-    REQUIRE(ic.pc == 0x04);
+    REQUIRE(pc == 0x04);
 
     breg[REGISTERS::T1] = 5;
     breg[REGISTERS::T2] = 5;
-    ic.pc = 0x04;
+    pc = ic.pc = 0x04;
     ic.imm13 = 0x0000000c;
     execute(ic);
-    REQUIRE(ic.pc == 0x04 + 0x0000000c);
+    REQUIRE(pc == 0x04 + 0x0000000c);
   }
   SECTION("bne")
   {
@@ -406,17 +404,17 @@ TEST_CASE("execute")
     ic.rs2 = REGISTERS::T2;
     breg[REGISTERS::T1] = 6;
     breg[REGISTERS::T2] = 5;
-    ic.pc = 0x04;
+    pc = ic.pc = 0x04;
     ic.imm13 = 0x0000000c;
     execute(ic);
-    REQUIRE(ic.pc == 0x04 + 0x0000000c);
+    REQUIRE(pc == 0x04 + 0x0000000c);
 
     breg[REGISTERS::T1] = 5;
     breg[REGISTERS::T2] = 5;
-    ic.pc = 0x04;
+    pc = ic.pc = 0x04;
     ic.imm13 = 0x0000000c;
     execute(ic);
-    REQUIRE(ic.pc == 0x04);
+    REQUIRE(pc == 0x04);
   }
   SECTION("bge")
   {
@@ -425,17 +423,17 @@ TEST_CASE("execute")
     ic.rs2 = REGISTERS::T2;
     breg[REGISTERS::T1] = 6;
     breg[REGISTERS::T2] = 5;
-    ic.pc = 0x04;
+    pc = ic.pc = 0x04;
     ic.imm13 = 0x0000000c;
     execute(ic);
-    REQUIRE(ic.pc == 0x04 + 0x0000000c);
+    REQUIRE(pc == 0x04 + 0x0000000c);
 
     breg[REGISTERS::T1] = 4;
     breg[REGISTERS::T2] = 5;
-    ic.pc = 0x04;
+    pc = ic.pc = 0x04;
     ic.imm13 = 0x0000000c;
     execute(ic);
-    REQUIRE(ic.pc == 0x04);
+    REQUIRE(pc == 0x04);
   }
   SECTION("bgeu")
   {
@@ -444,17 +442,17 @@ TEST_CASE("execute")
     ic.rs2 = REGISTERS::T2;
     breg[REGISTERS::T1] = 0x10000000;
     breg[REGISTERS::T2] = 0x10000001;
-    ic.pc = 0x04;
+    pc = ic.pc = 0x04;
     ic.imm13 = 0x0000000c;
     execute(ic);
-    REQUIRE(ic.pc == 0x04);
+    REQUIRE(pc == 0x04);
 
     breg[REGISTERS::T1] = 0x10000000;
     breg[REGISTERS::T2] = 0x10000000;
-    ic.pc = 0x04;
+    pc = ic.pc = 0x04;
     ic.imm13 = 0x0000000c;
     execute(ic);
-    REQUIRE(ic.pc == 0x04 + 0x0000000c);
+    REQUIRE(pc == 0x04 + 0x0000000c);
   }
   SECTION("blt")
   {
@@ -463,17 +461,17 @@ TEST_CASE("execute")
     ic.rs2 = REGISTERS::T2;
     breg[REGISTERS::T1] = 6;
     breg[REGISTERS::T2] = 5;
-    ic.pc = 0x04;
+    pc = ic.pc = 0x04;
     ic.imm13 = 0x0000000c;
     execute(ic);
-    REQUIRE(ic.pc == 0x04);
+    REQUIRE(pc == 0x04);
 
     breg[REGISTERS::T1] = 5;
     breg[REGISTERS::T2] = 6;
-    ic.pc = 0x04;
+    pc = ic.pc = 0x04;
     ic.imm13 = 0x0000000c;
     execute(ic);
-    REQUIRE(ic.pc == 0x04 + 0x0000000c);
+    REQUIRE(pc == 0x04 + 0x0000000c);
   }
   SECTION("bltu")
   {
@@ -482,28 +480,27 @@ TEST_CASE("execute")
     ic.rs2 = REGISTERS::T2;
     breg[REGISTERS::T1] = 0x10000000;
     breg[REGISTERS::T2] = 0x10000000;
-    ic.pc = 0x04;
+    pc = ic.pc = 0x04;
     ic.imm13 = 0x0000000c;
     execute(ic);
-    REQUIRE(ic.pc == 0x04);
+    REQUIRE(pc == 0x04);
 
     breg[REGISTERS::T1] = 0x10000000;
     breg[REGISTERS::T2] = 0x10000001;
-    ic.pc = 0x04;
+    pc = ic.pc = 0x04;
     ic.imm13 = 0x0000000c;
     execute(ic);
-    REQUIRE(ic.pc == 0x04 + 0x0000000c);
+    REQUIRE(pc == 0x04 + 0x0000000c);
   }
   SECTION("jal")
   {
     ic.ins_code = INSTRUCTIONS::I_jal;
     ic.rd = REGISTERS::T3;
-    ic.pc = 0x04;
-    ic.pc = 0x04;
-    ic.imm13 = 0x0000000c;
+    pc = ic.pc = 0x04;
+    ic.imm21 = 0x0000000c;
     execute(ic);
     REQUIRE(breg[REGISTERS::T3] == 0x08);
-    REQUIRE(ic.pc == 0x04 + 0x0000000c);
+    REQUIRE(pc == 0x04 + 0x0000000c);
   }
   SECTION("jalr")
   {
@@ -511,11 +508,11 @@ TEST_CASE("execute")
     ic.rs1 = REGISTERS::T1;
     ic.rd = REGISTERS::T3;
     breg[REGISTERS::T1] = 0xfff00000;
-    ic.pc = 0x04;
+    pc = ic.pc = 0x04;
     ic.imm12_i = 0x0000c;
     execute(ic);
     REQUIRE(breg[REGISTERS::T3] == 0x08);
-    REQUIRE(ic.pc == 0xfff00000 + 0x0000c);
+    REQUIRE(pc == 0xfff00000 + 0x0000c);
   }
   SECTION("lb")
   {
@@ -565,7 +562,7 @@ TEST_CASE("execute")
   {
     ic.ins_code = INSTRUCTIONS::I_lui;
     ic.rd = REGISTERS::T3;
-    ic.imm12_i = 0xfffffabc;
+    ic.imm20_u = 0xfffffabc;
     execute(ic);
     REQUIRE(breg[REGISTERS::T3] == 0xffabc000);
   }

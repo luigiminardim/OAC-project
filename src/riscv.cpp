@@ -7,24 +7,7 @@
 
 int32_t mem[MEM_SIZE];
 
-uint32_t pc, // contador de programa
-    ri,      // registrador de intrucao
-    sp,      // stack pointe4r
-    gp;      // global pointer
-
-int32_t imm12_i, // constante 12 bits
-    imm12_s,     // constante 12 bits
-    imm13,       // constante 13 bits
-    imm20_u,     // constante 20 bis mais significativos
-    imm21;       // constante 21 bits
-
-uint32_t opcode, // codigo da operacao
-    rs1,         // indice registrador rs
-    rs2,         // indice registrador rt
-    rd,          // indice registrador rd
-    shamt,       // deslocamento
-    funct3,      // campos auxiliares
-    funct7;      // constante instrucao tipo J
+uint32_t pc;
 
 int32_t breg[32];
 
@@ -51,9 +34,8 @@ void init()
   load_mem("assets/code.bin", 0);
   load_mem("assets/data.bin", DATA_SEGMENT_START);
   pc = 0x00000000;
-  ri = 0x00000000;
-  sp = 0x00003ffc;
-  gp = 0x00001800;
+  breg[REGISTERS::SP] = 0x00003ffc;
+  breg[REGISTERS::GP] = 0x00001800;
 }
 
 /**
@@ -63,8 +45,9 @@ void init()
  */
 void fetch(instruction_context_st &ic)
 {
-  ic.ir = ri = lw(pc, 0);
-  ic.pc = pc = pc + 4;
+  ic.pc = pc;
+  ic.ir = lw(ic.pc, 0);
+  pc = pc + 4;
 }
 
 int32_t extend32(int32_t number, uint qtd_number_bits)
@@ -76,27 +59,31 @@ int32_t extend32(int32_t number, uint qtd_number_bits)
 
 void decode(instruction_context_st &ic)
 {
-  rs1 = ic.rs1 = (REGISTERS)(get_field(ri, 15, 0x1f));
-  rs2 = ic.rs2 = (REGISTERS)(get_field(ri, 20, 0x1f));
-  rd = ic.rd = (REGISTERS)(get_field(ri, 7, 0x1f));
-  imm12_i = ic.imm12_i = extend32(get_field(ri, 20, 0xfff), 12);
-  imm20_u = ic.imm20_u = extend32(get_field(ri, 12, 0xfffff), 20);
-  imm13 = ic.imm13 = extend32(
-      (get_bit(ri, 31)) << 12 |
-          (get_bit(ri, 7)) << 11 |
-          (get_field(ri, 25, 0x3f)) << 5 |
-          (get_field(ri, 8, 0xf)) << 1,
+  ic.rs1 = (REGISTERS)(get_field(ic.ir, 15, 0x1f));
+  ic.rs2 = (REGISTERS)(get_field(ic.ir, 20, 0x1f));
+  ic.rd = (REGISTERS)(get_field(ic.ir, 7, 0x1f));
+  ic.imm12_i = extend32(get_field(ic.ir, 20, 0xfff), 12);
+  ic.imm20_u = extend32(get_field(ic.ir, 12, 0xfffff), 20);
+  ic.imm12_s = extend32(
+      (get_field(ic.ir, 25, 0x7f)) << 5 |
+          (get_field(ic.ir, 7, 0x1f)),
+      12);
+  ic.imm13 = extend32(
+      (get_bit(ic.ir, 31)) << 12 |
+          (get_bit(ic.ir, 7)) << 11 |
+          (get_field(ic.ir, 25, 0x3f)) << 5 |
+          (get_field(ic.ir, 8, 0xf)) << 1,
       13);
-  imm21 = ic.imm21 = extend32(
-      (get_bit(ri, 31)) << 20 |
-          (get_field(ri, 12, 0xff)) << 12 |
-          (get_bit(ri, 20)) << 11 |
-          (get_field(ri, 21, 0x3FF)) << 1,
+  ic.imm21 = extend32(
+      (get_bit(ic.ir, 31)) << 20 |
+          (get_field(ic.ir, 12, 0xff)) << 12 |
+          (get_bit(ic.ir, 20)) << 11 |
+          (get_field(ic.ir, 21, 0x3FF)) << 1,
       21);
-  shamt = ic.shamt = get_field(ri, 20, 0x1f);
-  opcode = (ri >> 0) & 0x7f;
-  funct3 = (ri >> 12) & 0x7;
-  funct7 = (ri >> 25) & 0x7f;
+  ic.shamt = get_field(ic.ir, 20, 0x1f);
+  uint32_t opcode = (ic.ir >> 0) & 0x7f;
+  uint32_t funct3 = (ic.ir >> 12) & 0x7;
+  uint32_t funct7 = (ic.ir >> 25) & 0x7f;
   if (opcode == OPCODES::RegType)
   {
     ic.ins_format = FORMATS::RType;
@@ -156,6 +143,10 @@ void decode(instruction_context_st &ic)
       if (funct7 == FUNCT7::SRLI7)
       {
         ic.ins_code = INSTRUCTIONS::I_srli;
+      }
+      else if (funct7 == FUNCT7::SRAI7)
+      {
+        ic.ins_code = INSTRUCTIONS::I_srai;
       }
     }
   }
@@ -250,7 +241,17 @@ void print_instr(instruction_context_st &ic) { return; }
 INSTRUCTIONS get_instr_code(uint32_t opcode, uint32_t func3, uint32_t func7) { return INSTRUCTIONS::I_add; }
 FORMATS get_i_format(uint32_t opcode, uint32_t func3, uint32_t func7) { return FORMATS::RType; }
 void debug_decode(instruction_context_st &ic) { return; }
-void dump_breg() { return; }
+
+void dump_breg()
+{
+  std::cout << "{";
+  for (int i = 0; i < 32; i++)
+  {
+    std::cout << std::dec << "X" << i << ": 0x" << std::hex << breg[i] << ", ";
+  }
+  std::cout << "}";
+}
+
 void dump_asm(int start, int end) { return; }
 
 /**
@@ -280,6 +281,7 @@ void dump_mem(int start_byte, int end_byte, char format)
 
 void execute(instruction_context_st &ic)
 {
+  breg[REGISTERS::ZERO] = 0;
   if (ic.ins_code == INSTRUCTIONS::I_add)
   {
     breg[ic.rd] = breg[ic.rs1] + breg[ic.rs2];
@@ -298,60 +300,59 @@ void execute(instruction_context_st &ic)
   }
   else if (ic.ins_code == INSTRUCTIONS::I_auipc)
   {
-    breg[ic.rd] = ic.pc + (ic.imm12_i << 12);
+    breg[ic.rd] = ic.pc + (ic.imm20_u << 12);
   }
   else if (ic.ins_code == INSTRUCTIONS::I_beq)
   {
     if (breg[ic.rs1] == breg[ic.rs2])
     {
-      ic.pc = ic.pc + ic.imm13;
+      pc = ic.pc + ic.imm13;
     }
   }
   else if (ic.ins_code == INSTRUCTIONS::I_bne)
   {
     if (breg[ic.rs1] != breg[ic.rs2])
     {
-      ic.pc = ic.pc + ic.imm13;
+      pc = ic.pc + ic.imm13;
     }
   }
   else if (ic.ins_code == INSTRUCTIONS::I_bge)
   {
     if (breg[ic.rs1] >= breg[ic.rs2])
     {
-      ic.pc = ic.pc + ic.imm13;
+      pc = ic.pc + ic.imm13;
     }
   }
   else if (ic.ins_code == INSTRUCTIONS::I_bgeu)
   {
     if (((uint32_t)breg[ic.rs1]) >= ((uint32_t)breg[ic.rs2]))
     {
-      ic.pc = ic.pc + ic.imm13;
+      pc = ic.pc + ic.imm13;
     }
   }
   else if (ic.ins_code == INSTRUCTIONS::I_blt)
   {
     if (breg[ic.rs1] < breg[ic.rs2])
     {
-      ic.pc = ic.pc + ic.imm13;
+      pc = ic.pc + ic.imm13;
     }
   }
   else if (ic.ins_code == INSTRUCTIONS::I_bltu)
   {
     if (((uint32_t)breg[ic.rs1]) < ((uint32_t)breg[ic.rs2]))
     {
-      ic.pc = ic.pc + ic.imm13;
+      pc = ic.pc + ic.imm13;
     }
   }
   else if (ic.ins_code == INSTRUCTIONS::I_jal)
   {
     breg[ic.rd] = ic.pc + 4;
-    ic.pc = ic.pc + ic.imm13;
+    pc = ic.pc + ic.imm21;
   }
   else if (ic.ins_code == INSTRUCTIONS::I_jalr)
   {
-    int32_t rs1 = breg[ic.rs1];
+    pc = breg[ic.rs1] + ic.imm12_i;
     breg[ic.rd] = ic.pc + 4;
-    ic.pc = rs1 + ic.imm12_i;
   }
   else if (ic.ins_code == INSTRUCTIONS::I_lb)
   {
@@ -371,11 +372,14 @@ void execute(instruction_context_st &ic)
   }
   else if (ic.ins_code == INSTRUCTIONS::I_lui)
   {
-    breg[ic.rd] = ic.imm12_i << 12;
+    breg[ic.rd] = ic.imm20_u << 12;
   }
   else if (ic.ins_code == INSTRUCTIONS::I_sltu)
   {
     breg[ic.rd] = ((uint32_t)breg[ic.rs1]) < ((uint32_t)breg[ic.rs2]) ? 1 : 0;
+  }
+  else if (ic.ins_code == INSTRUCTIONS::I_nop)
+  {
   }
   else if (ic.ins_code == INSTRUCTIONS::I_ori)
   {
@@ -413,7 +417,50 @@ void execute(instruction_context_st &ic)
   {
     breg[ic.rd] = breg[ic.rs1] ^ breg[ic.rs2];
   }
+  else if (ic.ins_code == INSTRUCTIONS::I_ecall)
+  {
+    if (breg[REGISTERS::A7] == 1)
+    {
+      std::cout << breg[REGISTERS::A0];
+    }
+    else if (breg[REGISTERS::A7] == 4)
+    {
+      char *strPtr = (char *)mem + breg[REGISTERS::A0];
+      std::cout << strPtr;
+    }
+    else if (breg[REGISTERS::A7] == 10)
+    {
+      pc = DATA_SEGMENT_START;
+    }
+  }
+  breg[REGISTERS::ZERO] = 0;
 }
 
-void step() { return; }
-void run() { return; }
+void step()
+{
+  instruction_context_st ic;
+  fetch(ic);
+  decode(ic);
+  static bool should_stop = false;
+  if (ic.pc == -1)
+    should_stop = true;
+  if (should_stop)
+  {
+    std::cout << std::hex
+              << "pc: " << ic.pc << "\n"
+              << "ir: " << ic.ir << "\n"
+              << "code: " << std::dec << ic.ins_code << "\n";
+    dump_breg();
+    std::cout << "\n";
+    std::cin.get();
+  }
+  execute(ic);
+}
+
+void run()
+{
+  while (pc < DATA_SEGMENT_START)
+  {
+    step();
+  }
+}

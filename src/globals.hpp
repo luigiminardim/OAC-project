@@ -211,24 +211,7 @@ const WORD_SIZE_E WSIZE = WORD_SIZE;
 
 extern int32_t breg[32];
 
-extern uint32_t pc, // contador de programa
-    ri,             // registrador de intrucao
-    sp,             // stack pointe4r
-    gp;             // global pointer
-
-extern int32_t imm12_i, // constante 12 bits
-    imm12_s,            // constante 12 bits
-    imm13,              // constante 13 bits
-    imm20_u,            // constante 20 bis mais significativos
-    imm21;              // constante 21 bits
-
-extern uint32_t opcode, // codigo da operacao
-    rs1,                // indice registrador rs
-    rs2,                // indice registrador rt
-    rd,                 // indice registrador rd
-    shamt,              // deslocamento
-    funct3,             // campos auxiliares
-    funct7;             // constante instrucao tipo J
+extern uint32_t pc;
 
 struct instruction_context_st
 {
