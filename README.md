@@ -1,9 +1,10 @@
 # Projeto de Organização de Arquitetura de Computadores
 
 Este projeto consiste na simulação de instruções do RISCV RV32I em linguagem C.
-O respositório desse projeto pode ser encontrado em https://github.com/luigiminardim/OAC-project.
+O respositório desse projeto pode ser encontrado em <https://github.com/luigiminardim/OAC-project>.
 
 Neste projeto, foram implementadas as instruções dos RISCV:
+
 - add
 - addi
 - and
@@ -35,7 +36,7 @@ Neste projeto, foram implementadas as instruções dos RISCV:
 - ecall (print string, print integer, exit)
 
 Para verificar se o simulador está funcionando corretamente deve-se utilizar o
-(RARS)[https://github.com/TheThirdOne/rars] para geração de códigos de teste que incluam código
+[RARS](https://github.com/TheThirdOne/rars) para geração de códigos de teste que incluam código
 executável e dados. Os arquivo de código executável juntamente com o arquivo de dados verificam se
 todas as instruções implementadas no simulador funcionam corretamente.
 O código assembly que gerou os binários de dados e teste pode ser encontrado em `./assets/test.asm`.
@@ -44,33 +45,11 @@ Os binários de dados e código gerados por `./assets/test.asm` são respectivam
 supracitados, basta utilizar o comando `make run`, em que o usuário deve ver uma saída como:
 
 ```
-Teste1 OK
-Teste2 OK
-Teste3 OK
-Teste4 OK
-Teste5 OK
-Teste6 OK
-Teste7 OK
-Teste8 OK
-Teste9 OK
-Teste10 OK
-Teste11 OK
-Teste12 OK
-Teste13 OK
-Teste14 OK
-Teste15 OK
-Teste16 OK
-Teste17 OK
-Teste18 OK
-Teste19 OK
-Teste20 OK
-Teste21 OK
-Teste22 OK
+Os oito primeiros numeros primos sao : 1 3 5 7 11 13 17 19
 ```
 
-Se o usário desejar trocar os arquivos binários de teste, basta montar os binários de dados e código
-no (RARS)[https://github.com/TheThirdOne/rars]  e substituir os arquivos gerados em `./assets/` com
-os mesmos nomes.
+Se o usário desejar trocar os arquivos binários de teste, basta montar os binários de dados e código no [RARS](https://github.com/TheThirdOne/rars)  e substituir os arquivos gerados em
+`./assets/` com os mesmos nomes.
 
 > Não se esqueça de ativar a opção "Text at Address 0" na hora de exportar os binários.
 
